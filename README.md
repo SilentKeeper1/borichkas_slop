@@ -2,51 +2,57 @@
 
 ## 🇺🇦 Українською
 
-**Borichkas Slop** — це веб-додаток для замовлення піци онлайн, створений командою з 3-х людей на курсі **GoITeens (Python Web)**.
+**Borichkas Slop** — це веб-додаток для замовлення піци онлайн, створений командою з 3-х учасників на курсі **GoITeens (Python Web)**.
 
-Ми реалізували сайт із повним функціоналом для користувача: реєстрація, вхід, перегляд меню, кошик, сторінка оформлення замовлення та візуальне відображення зон доставки.
+Ми реалізували сайт із повним функціоналом для користувача: реєстрація, вхід, перегляд меню, кошик, оформлення замовлення, бонуси, особистий кабінет і перевірка покриття доставки через інтерактивну карту.
 
-### 🚀 Функціонал:
-- Реєстрація та авторизація користувачів
-- Меню з піцою (динамічно з БД)
-- Кошик з підрахунком ціни
-- Оформлення замовлення (checkout)
-- Сторінка бонусів, особистого кабінету
-- Карта доставки (у майбутньому)
-- Адмін-панель для керування
+### 🚀 Основний функціонал:
+- ✅ Реєстрація та авторизація користувачів
+- 🍕 Меню з піцою (товари підтягуються динамічно з бази даних)
+- 🛒 Кошик із підрахунком загальної вартості
+- 📦 Сторінка оформлення замовлення (checkout)
+- 🗺 Інтерактивна **карта доставки** — можна перевірити, чи доступна доставка у ваш регіон перед введенням адреси
+- 🎁 Бонусна система
+- 👤 Особистий кабінет
+- 🛠 Адмін-панель для керування товарами
 
 ### 🧠 Технології:
 - Python (Flask)
-- SQLite
-- HTML, CSS
-- Jinja2
-- Структура шаблонів (`/templates`)
-- База даних у `/instance`
+- HTML5 + CSS3 + JS
+- Jinja2 (шаблонізатор)
+- **SQLAlchemy (ORM) + SQLite**
+- Leaflet.js + OpenStreetMap для карти доставки
+- Структура:
+  - шаблони: `/templates`
+  - база даних: `/instance`
 
 ---
 
 ## 🇬🇧 English
 
-**Borichkas Slop** is a pizza delivery web application created by a team of 3 students during the **GoITeens Python Web course**.
+**Borichkas Slop** is a pizza delivery web app built by a team of 3 during the **GoITeens Python Web course**.
 
-It provides a full pizza ordering experience including login/register system, dynamic menu, cart management, and checkout page.
+We implemented a full user experience including auth, menu browsing, cart system, checkout page, bonus system, personal dashboard, and a live delivery coverage map.
 
-### 🚀 Features:
-- User registration & login
-- Dynamic menu (from SQLite DB)
-- Shopping cart with price calculation
-- Checkout page
-- Bonus system, personal dashboard
-- Delivery map (coming soon)
-- Admin panel for management
+### 🚀 Main Features:
+- ✅ User registration & login
+- 🍕 Pizza menu loaded from database
+- 🛒 Shopping cart with dynamic total price calculation
+- 📦 Order checkout page
+- 🗺 **Interactive delivery map** — check your address before submitting the order
+- 🎁 Bonus system
+- 👤 Personal dashboard
+- 🛠 Admin panel for item management
 
 ### 🧠 Technologies:
 - Python (Flask)
-- SQLite
-- HTML, CSS
-- Jinja2 template engine
-- Template files in `/templates`
-- Database files in `/instance`
+- HTML5 + CSS3 + JS
+- Jinja2 templating
+- **SQLAlchemy ORM + SQLite**
+- Leaflet.js + OpenStreetMap (for delivery coverage map)
+- Structure:
+  - Templates: `/templates`
+  - Databases: `/instance`
 
 ---
 
@@ -55,4 +61,4 @@ It provides a full pizza ordering experience including login/register system, dy
 - 👩‍💻 [Ім’я 2]
 - 🧑‍💻 [Ім’я 3]
 
-> Створено з ❤️ під час навчання в GoITeens
+> Створено з ❤️ під час навчання в **GoITeens Python Web**
