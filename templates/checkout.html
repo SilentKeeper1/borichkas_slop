@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Оформлення замовлення — Borichkas slop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+      margin-top: 2rem;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .note {
+      margin-top: 1rem;
+      font-style: italic;
+      color: #555;
+    }
+    #zoneWarning {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="mb-4">🧾 Оформлення замовлення</h1>
+
+    {% if not cart %}
+      <div class="alert alert-info">
+        Ваш кошик порожній. <a href="{{ url_for('menu') }}">Перейти до меню</a>
+      </div>
+    {% else %}
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Назва</th>
+            <th>Ціна</th>
+            <th>Кількість</th>
+            <th>Сума</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.price }} ₴</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price * item.quantity }} ₴</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <h4>Загальна сума: <span class="text-success">{{ total }} ₴</span></h4>
+    <form method="POST" action="{{ url_for('create_order') }}" class="d-flex flex-column flex-sm-row align-items-start gap-2">
+      <div>
+        <label for="addressInput" class="form-label mb-1">Адреса доставки:</label>
+        <input type="text" name="address" id="addressInput" class="form-control" placeholder="Наприклад, Київ, вул. Хрещатик 10" required>
+      </div>
+      <div class="d-flex flex-column">
+        <a href="{{ url_for('menu') }}" class="btn btn-outline-secondary mb-2">Назад до меню</a>
+        <button type="submit" class="btn btn-success">Підтвердити замовлення</button>
+      </div>
+    </form>
+  </div>
+{% endif %}
+
+    <div id="map"></div>
+
+    <div class="note">
+      ⚠️ Тимчасово не доставляємо на окуповані території України. Ми обов’язково повернемося після деокупації ❤️🇺🇦
+    </div>
+
+<!-- Адреса доставки -->
+<div class="mt-5">
+  <label for="addressInput" class="form-label">Введіть адресу доставки:</label>
+  <input type="text" id="addressInput" class="form-control" placeholder="Наприклад, Київ, вул. Хрещатик 10">
+  <button class="btn btn-success   mt-2" onclick="checkDeliveryZone()">Перевірити адресу</button>
+</div>
+
+<div id="zoneWarning" class="text-danger mt-2" style="display:none;">
+  ⚠️ Ваша адреса поза зоною доставки!
+</div>
+<div id="zoneSuccess" class="text-success mt-2" style="display:none;">
+  ✅ Адреса в межах зони доставки.
+</div>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+  // Спершу оголошуємо зони доставки
+  const regions = {
+    'green': [
+      ['Вінницька область', 49.2331, 28.4682],
+      ['Волинська область', 50.7472, 25.3254],
+      ['Дніпропетровська область', 48.4647, 35.0462],
+      ['Житомирська область', 50.2649, 28.6767],
+      ['Закарпатська область', 48.6208, 22.2879],
+      ['Запорізька область', 47.8388, 35.1396],
+      ['Івано-Франківська область', 48.9226, 24.7111],
+      ['Київська область', 50.4017, 30.2520],
+      ['Кіровоградська область', 48.5080, 32.2597],
+      ['Львівська область', 49.8397, 24.0297],
+      ['Миколаївська область', 46.9750, 31.9946],
+      ['Одеська область', 46.4825, 30.7233],
+      ['Полтавська область', 49.5883, 34.5514],
+      ['Рівненська область', 50.6199, 26.2516],
+      ['Сумська область', 50.9077, 34.7981],
+      ['Тернопільська область', 49.5535, 25.5948],
+      ['Харківська область', 49.9935, 36.2304],
+      ['Херсонська область', 46.6354, 32.6169],
+      ['Хмельницька область', 49.4215, 26.9965],
+      ['Черкаська область', 49.4444, 32.0598],
+      ['Чернівецька область', 48.2915, 25.9358],
+      ['Чернігівська область', 51.4982, 31.2893],
+      ['Кривий Ріг (місто)', 47.9105, 33.3918]
+    ],
+    'blue': [
+      ['Дольнєшльонське', 51.1079, 17.0385],
+      ['Куявсько-Поморське', 53.0138, 18.5984],
+      ['Любуське', 52.2456, 15.2259],
+      ['Лодзьке', 51.7592, 19.4550],
+      ['Мазовецьке', 52.2297, 21.0122],
+      ['Опольське', 50.6751, 17.9213],
+      ['Підкарпатське', 49.7831, 22.7671],
+      ['Підляське', 52.7047, 23.2525],
+      ['Поморське', 54.3520, 18.6466],
+      ['Свентокшиське', 50.8661, 20.6286],
+      ['Вармінсько-Мазурське', 53.7784, 20.4801],
+      ['Великопольське', 52.4064, 16.9252],
+      ['Західнопоморське', 53.4285, 14.5528],
+      ['Люблінське', 51.2465, 22.5684],
+      ['Малопольське', 50.0647, 19.9450],
+      ['Сілезьке', 50.2649, 19.0238]
+    ],
+    'red': [
+      ['Region Hovedstaden', 55.6759, 12.5655],
+      ['Region Sjælland', 55.4028, 11.3546],
+      ['Region Syddanmark', 55.3556, 10.3450],
+      ['Region Midtjylland', 56.1629, 9.5870],
+      ['Region Nordjylland', 57.0488, 9.9217]
+    ],
+    'white': [
+      ['Станція "Академік Вернадський"', -65.2510, -64.2610]
+    ]
+  };
+
+  // Створюємо масив deliveryZones для перевірки адрес
+  const deliveryZones = [];
+  for (const [color, areas] of Object.entries(regions)) {
+    areas.forEach(([name, lat, lon]) => {
+      deliveryZones.push({ name, lat, lon });
+    });
+  }
+
+  // Ініціалізація карти
+  const map = L.map('map').setView([52, 20], 5);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 10,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Функція додавання кругів зон доставки на карту
+  function addRegionCircle(lat, lon, radius, color, name) {
+    L.circle([lat, lon], {
+      color,
+      fillColor: color,
+      fillOpacity: 0.2,
+      radius
+    }).addTo(map).bindPopup(name);
+  }
+
+  // Малюємо круги для кожної зони
+  for (const [color, areas] of Object.entries(regions)) {
+    areas.forEach(([name, lat, lon]) => {
+      const radius = color === 'green' ? 50000 : color === 'blue' ? 35000 : color === 'red' ? 25000 : 20000;
+      addRegionCircle(lat, lon, radius, color, name + (color === 'white' ? ' (Антарктида)' : ''));
+    });
+  }
+
+  // Функція перевірки введеної адреси
+  async function checkDeliveryZone() {
+    const input = document.getElementById('addressInput').value;
+    const warning = document.getElementById('zoneWarning');
+    const success = document.getElementById('zoneSuccess');
+
+    warning.style.display = 'none';
+    success.style.display = 'none';
+
+    if (!input.trim()) return;
+
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}`);
+      const data = await response.json();
+
+      if (!data.length) {
+        warning.textContent = '❌ Адресу не знайдено!';
+        warning.style.display = 'block';
+        return;
+      }
+
+      const userLat = parseFloat(data[0].lat);
+      const userLon = parseFloat(data[0].lon);
+
+      const inZone = deliveryZones.some(region => {
+        const dLat = region.lat - userLat;
+        const dLon = region.lon - userLon;
+        const distance = Math.sqrt(dLat * dLat + dLon * dLon) * 111000; // приблизно метри
+
+        const radius = region.name.includes('Україна') ? 50000 :
+                       region.name.includes('Польща') ? 35000 :
+                       region.name.includes('Данія') ? 25000 : 20000;
+
+        return distance <= radius;
+      });
+
+      if (inZone) {
+        success.style.display = 'block';
+      } else {
+        warning.style.display = 'block';
+      }
+
+    } catch (err) {
+      warning.textContent = '⚠️ Помилка при перевірці адреси!';
+      warning.style.display = 'block';
+    }
+  }
+</script>
+
+  </body>
+</html>

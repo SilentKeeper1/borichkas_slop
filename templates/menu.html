@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Меню — Borichkas slop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      color: #212529;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .section-title {
+      margin: 40px 0 20px;
+      text-align: center;
+      font-size: 2rem;
+    }
+    .card img {
+      max-height: 200px;
+      object-fit: cover;
+    }
+    footer {
+      margin-top: 60px;
+      background: #e9ecef;
+      color: #495057;
+      padding: 20px 0;
+      text-align: center;
+    }
+    .navbar-light .nav-link:hover {
+      color: #d63384;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-price {
+      font-size: 1.25rem;
+      color: #000;
+      margin: 0;
+    }
+    /* Прибираємо стрілку з dropdown-toggle */
+.nav-link.dropdown-toggle::after {
+  display: none; /* хаваємо стандартну стрілку */
+}
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <!-- Логотип -->
+    <a class="navbar-brand fw-bold text-danger" href="{{ url_for('index') }}">🍕 Borichkas slop</a>
+
+    <!-- Кнопка бургер для мобілок -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Навігація -->
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <!-- Завжди доступні пункти -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('menu') }}">Меню</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">Кошик</a></li>
+
+        {% if session.get("user_id") %}
+          <!-- Якщо залогінений -->
+          <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center"
+         href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+         style="
+           background-color: #f0f0f0;        /* світло-сірий фон */
+           border: 2px solid rgba(21, 115, 71, 0.5); /* зелена рамка з прозорістю 50% */
+           border-radius: 50%;               /* кругла форма */
+           padding: 6px 10px;                /* відступ всередині */
+           font-size: 1.2rem;                /* трохи більша піца */
+           width: 42px; height: 42px;       /* квадрат для кола */
+         "
+         >
+        🍕
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Налаштування</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Вийти</a></li>
+      </ul>
+    </li>
+
+        {% else %}
+          <!-- Якщо НЕ залогінений -->
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Вхід</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Реєстрація</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="container">
+  <div class="section-title">🍕 Наше меню</div>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for item in items %}
+    <div class="col">
+      <div class="card h-100">
+        <img src="{{ item[3] }}" class="card-img-top" alt="{{ item[0] }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ item[0] }}</h5>
+          <p class="card-text">{{ item[1] }}</p>
+          <div class="price-row">
+            <form method="POST" action="{{ url_for('add_to_cart') }}">
+              <input type="hidden" name="name" value="{{ item[0] }}">
+              <input type="hidden" name="price" value="{{ item[2] }}">
+              <input type="hidden" name="image_url" value="{{ item[3] }}">
+              <button type="submit" class="btn btn-success">Додати до кошика</button>
+            </form>
+            <p class="card-price">{{ item[2] }}₴</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Реєстрація — Borichkas slop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .auth-box {
+      max-width: 450px;
+      margin: 80px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    footer {
+      margin-top: 60px;
+      background: #e9ecef;
+      color: #495057;
+      padding: 20px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-danger" href="index">🍕 Borichkas slop</a>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="menu">Меню</a></li>
+        <li class="nav-item"><a class="nav-link" href="cart">Кошик</a></li>
+        <li class="nav-item"><a class="nav-link" href="login">Вхід</a></li>
+        <li class="nav-item"><a class="nav-link active" href="register">Реєстрація</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-box">
+  <h3 class="text-center mb-4">📝 Реєстрація</h3>
+<form method="POST" action="{{ url_for('register') }}">
+  <div class="mb-3">
+    <label for="name" class="form-label">Ім’я</label>
+    <input type="text" class="form-control" id="name" name="name" required>
+  </div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Електронна пошта</label>
+    <input type="email" class="form-control" id="email" name="email" required>
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Пароль</label>
+    <input type="password" class="form-control" id="password" name="password" required>
+  </div>
+  <button type="submit" class="btn btn-danger w-100">Зареєструватися</button>
+
+  {% if message %}
+    <div class="alert alert-info mt-3">{{ message }}</div>
+  {% endif %}
+</form>
+  <div class="text-center mt-3">
+    <a href="login.html">Вже маєш акаунт? Увійти</a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

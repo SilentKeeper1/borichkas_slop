@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Бонуси</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .card {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      text-align: center;
+    }
+    h2 { color: #444; }
+    .bonus { font-size: 36px; color: green; }
+    .spent { font-size: 16px; color: #666; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Вітаємо, {{ session['user_name'] }}!</h2>
+    <p>У тебе зараз:</p>
+    <p class="bonus">{{ bonus }} бонусів</p>
+    <p class="spent">Ти витратив загалом {{ total_spent }} грн</p>
+  </div>
+
+</body>
+</html>

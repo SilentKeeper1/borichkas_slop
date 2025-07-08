@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Кошик — Borichkas slop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .section-title {
+      margin: 40px 0 20px;
+      text-align: center;
+      font-size: 2rem;
+    }
+    footer {
+      margin-top: 60px;
+      background: #e9ecef;
+      color: #495057;
+      padding: 20px 0;
+      text-align: center;
+    }
+    .table img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .navbar-light .nav-link:hover {
+      color: #d63384;
+    }
+    footer {
+      margin-top: 60px;
+      background: #e9ecef;
+      color: #495057;
+      padding: 20px 0;
+      text-align: center;
+    }
+/* Прибираємо стрілку з dropdown-toggle */
+.nav-link.dropdown-toggle::after {
+  display: none; /* хаваємо стандартну стрілку */
+}
+  </style>
+</head>
+<body>
+
+<!-- Навігація -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <!-- Логотип -->
+    <a class="navbar-brand fw-bold text-danger" href="{{ url_for('index') }}">🍕 Borichkas slop</a>
+
+    <!-- Кнопка бургер для мобілок -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Навігація -->
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <!-- Завжди доступні пункти -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('menu') }}">Меню</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">Кошик</a></li>
+
+        {% if session.get("user_id") %}
+          <!-- Якщо залогінений -->
+          <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center"
+         href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+         style="
+           background-color: #f0f0f0;        /* світло-сірий фон */
+           border: 2px solid rgba(21, 115, 71, 0.5); /* зелена рамка з прозорістю 50% */
+           border-radius: 50%;               /* кругла форма */
+           padding: 6px 10px;                /* відступ всередині */
+           font-size: 1.2rem;                /* трохи більша піца */
+           width: 42px; height: 42px;       /* квадрат для кола */
+         "
+         >
+        🍕
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Налаштування</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Вийти</a></li>
+      </ul>
+    </li>
+
+                {% else %}
+          <!-- Якщо НЕ залогінений -->
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Вхід</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Реєстрація</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- Кошик -->
+<div class="container">
+  <div class="section-title">🛒 Ваш кошик</div>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Фото</th>
+          <th>Назва</th>
+          <th>Ціна</th>
+          <th>Кількість</th>
+          <th>Сума</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if not cart %}
+          <tr><td colspan="6" class="text-center">Кошик порожній</td></tr>
+        {% else %}
+          {% for item in cart %}
+          <tr>
+            <td><img src="{{ item.image_url }}" alt="{{ item.name }}"></td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.price }} ₴</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ (item.price * item.quantity) | round(2) }} ₴</td>
+            <td>
+              <form method="POST" action="{{ url_for('remove_from_cart') }}">
+                <input type="hidden" name="name" value="{{ item.name }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <h4>Загальна сума: <span class="text-success">{{ total | round(2) }} ₴</span></h4>
+    <div>
+      <a href="{{ url_for('clear_cart') }}" class="btn btn-outline-secondary me-2">Очистити кошик</a>
+      {% if cart %}
+        <a href="{{ url_for('checkout') }}" class="btn btn-success">Оформити замовлення</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelector(".btn-success").addEventListener("click", async () => {
+  const rows = document.querySelectorAll("tbody tr");
+  const cartItems = [];
+
+  rows.forEach(row => {
+    const name = row.querySelector("td:nth-child(2)").textContent.trim();
+    const priceText = row.querySelector("td:nth-child(3)").textContent.trim().replace("₴", "");
+    const quantity = parseInt(row.querySelector("input[type='number']").value);
+    const price = parseFloat(priceText);
+
+    cartItems.push({
+      name,
+      price,
+      quantity,
+      subtotal: price * quantity
+    });
+  });
+
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+  const response = await fetch("/create_order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cart_items: cartItems,
+      total_price: totalPrice
+    })
+  });
+
+  if (response.ok) {
+    const result = await response.json();
+    alert(result.message);
+    document.querySelector("tbody").innerHTML = "";
+    // тут можна оновити відображення загальної суми, якщо є функція updateTotal()
+  } else {
+    alert("Помилка при оформленні замовлення");
+  }
+});
+</script>
+</body>
+</html>

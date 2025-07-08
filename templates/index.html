@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Borichkas slop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      color: #212529;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .hero {
+      position: relative;
+      background: url("https://smachno.ua/wp-content/uploads/2017/11/28/444621-PEMTPH-272.jpg") center/cover no-repeat;
+      padding: 100px 0;
+      text-align: center;
+      color: white;
+      overflow: hidden; /* важливо для псевдоелемента */
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.45); /* затемнення */
+      z-index: 1;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 2;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .section-title {
+      margin-top: 60px;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 2rem;
+    }
+    .card img {
+      max-height: 200px;
+      object-fit: cover;
+    }
+    footer {
+      margin-top: 60px;
+      background: #e9ecef;
+      color: #495057;
+      padding: 20px 0;
+      text-align: center;
+    }
+    .navbar-light .nav-link:hover {
+      color: #d63384;
+    }
+    /* Прибираємо стрілку з dropdown-toggle */
+.nav-link.dropdown-toggle::after {
+  display: none; /* хаваємо стандартну стрілку */
+}
+  </style>
+</head>
+<body>
+
+<!-- Навігація -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <!-- Логотип -->
+    <a class="navbar-brand fw-bold text-danger" href="{{ url_for('index') }}">🍕 Borichkas slop</a>
+
+    <!-- Кнопка бургер для мобілок -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Навігація -->
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <!-- Завжди доступні пункти -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('menu') }}">Меню</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">Кошик</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('bonus') }}">Бонуси</a></li>
+
+
+        {% if session.get("user_id") %}
+          <!-- Якщо залогінений -->
+          <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center"
+         href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+         style="
+           background-color: #f0f0f0;        /* світло-сірий фон */
+           border: 2px solid rgba(21, 115, 71, 0.5); /* зелена рамка з прозорістю 50% */
+           border-radius: 50%;               /* кругла форма */
+           padding: 6px 10px;                /* відступ всередині */
+           font-size: 1.2rem;                /* трохи більша піца */
+           width: 42px; height: 42px;       /* квадрат для кола */
+         "
+         >
+        🍕
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Налаштування</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Вийти</a></li>
+      </ul>
+    </li>
+                {% else %}
+          <!-- Якщо НЕ залогінений -->
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Вхід</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Реєстрація</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Hero-секція -->
+<section class="hero">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Ласкаво просимо до Borichkas slop</h1>
+    <p class="lead">Смак майбутнього — вже сьогодні. Замовляй піцу швидко, стильно, смачно!</p>
+    <a href="menu.html" class="btn btn-lg btn-warning mt-3">Переглянути меню</a>
+  </div>
+</section>
+
+<!-- Що ми пропонуємо -->
+<div class="container">
+  <div class="section-title">🔥 Що ми пропонуємо</div>
+  <div class="row text-center">
+    <div class="col-md-3">
+      <h5>🍕 Авторська піца</h5>
+      <p>Унікальні смаки для справжніх гурманів</p>
+    </div>
+    <div class="col-md-3">
+      <h5>🚀 Швидка доставка</h5>
+      <p>Менше 30 хв — і піца у тебе</p>
+    </div>
+    <div class="col-md-3">
+      <h5>🛒 Зручне замовлення</h5>
+      <p>Простий інтерфейс і кошик онлайн</p>
+    </div>
+    <div class="col-md-3">
+      <h5>🔐 Безпека</h5>
+      <p>Захист даних і надійна авторизація</p>
+    </div>
+  </div>
+
+  <!-- Прев’ю меню -->
+  <div class="section-title">🍽️ Найпопулярніше</div>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <img src="https://cdn.smak.menu/images/maxone/14741/14741-354a42d77438f1873a7305a65df61089.jpg" class="card-img-top" alt="Пепероні">
+        <div class="card-body">
+          <h5 class="card-title">Класична Пепероні</h5>
+          <p class="card-text">Соковита й гостра — улюблениця поціновувачів традиційної піци.</p>
+          <a href="#" class="btn btn-success">Детальніше</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <img src="https://foodfestival.com.ua/image/cache/catalog/articles/glavnoe_blyudo-pizza-margherita-pomidory-motsarela-bazilik-1920x1000.jpg" class="card-img-top" alt="Маргарита">
+        <div class="card-body">
+          <h5 class="card-title">Піца Маргарита</h5>
+          <p class="card-text">Томати, базилік та моцарела — ідеальний баланс простоти й смаку.</p>
+          <a href="#" class="btn btn-success">Детальніше</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <img src="https://galya-baluwana.in.ua/wp-content/uploads/2023/11/Pitsa-Gavajska.webp" class="card-img-top" alt="Гавайська">
+        <div class="card-body">
+          <h5 class="card-title">Гавайська</h5>
+          <p class="card-text">Шинка та ананас — солодко-солоний контраст, що викликає суперечки і любов.</p>
+          <a href="#" class="btn btn-success">Детальніше</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
