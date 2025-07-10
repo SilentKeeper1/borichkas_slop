@@ -263,5 +263,39 @@ def admin():
                            total_income=total_income)
 
 
+@app.route("/admin/add", methods=["GET", "POST"])
+def admin_add():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        description = request.form.get("description")
+        price = float(request.form.get("price"))
+        image_url = request.form.get("image_url")
+
+        # Пріоритет — файл, якщо завантажено
+        image_file = request.files.get("image_file")
+        if image_file and image_file.filename:
+            image_path = f"static/uploads/{image_file.filename}"
+            image_file.save(image_path)
+            image_url = "/" + image_path  # Шлях для відображення
+
+        conn = sqlite3.connect("instance/borichkas_slop.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO products (name, description, price, image_url, category)
+            VALUES (?, ?, ?, ?, ?)
+        """, (name, description, price, image_url, "pizza"))  # або "drink"
+        conn.commit()
+        conn.close()
+
+        flash("Позицію успішно додано!")
+        return redirect(url_for("admin"))
+
+    return render_template("add.html")
+
+
+
 if __name__ == "__main__":
     app.run(port=12434, debug=True)
