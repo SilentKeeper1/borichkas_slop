@@ -2,137 +2,348 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title> Admin — Borichkas slop</title>
+  <title>Адмін-панель — Borichkas slop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     body {
-      background-color: #f8f9fa;
-      color: #212529;
+      background-color: #f8f9fa; /* Дуже світлий сірий фон */
+      color: #212529; /* Темний колір тексту */
       font-family: 'Segoe UI', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
+    /* Навігаційний панель зверху */
     .navbar-light .nav-link:hover {
-      color: #d63384;
+      color: #dc3545; /* Червоний колір при наведенні */
     }
+    .navbar-brand {
+      font-weight: bold;
+      color: #dc3545 !important; /* Червоний колір для бренду */
+    }
+    .nav-link.dropdown-toggle::after {
+        display: none;
+    }
+
     /* Сайдбар */
     #sidebar {
-      width: 220px;
-      background: #157347;
+      width: 250px;
+      background: #ffffff; /* Білий фон сайдбару */
       min-height: 100vh;
       padding-top: 1rem;
       position: fixed;
       top: 0; left: 0;
-      color: white;
+      color: #343a40; /* Темний текст */
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); /* Легка тінь */
+      transition: all 0.3s ease;
+    }
+    #sidebar .sidebar-header {
+      padding: 1.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #e9ecef; /* Легка розділювальна лінія */
+    }
+    #sidebar .sidebar-header h3 {
+      color: #dc3545; /* Червоний колір для заголовка сайдбару */
+      font-weight: 700;
+      margin-bottom: 0;
     }
     #sidebar .nav-link {
-      color: #b8d8b8;
-      font-weight: 600;
-      padding: 12px 20px;
-      display: block;
+      color: #495057; /* Темніший сірий для посилань */
+      font-weight: 500;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      border-radius: 0;
+    }
+    #sidebar .nav-link i {
+      color: #6c757d; /* Сірі іконки за замовчуванням */
+      font-size: 1.1rem;
     }
     #sidebar .nav-link.active,
     #sidebar .nav-link:hover {
-      background-color: #0e5029;
-      color: #fff;
+      background-color: #f1f1f1; /* Дуже світлий сірий фон при наведенні/активності */
+      color: #dc3545; /* Червоний текст */
       text-decoration: none;
-      border-radius: 5px;
+      border-left: 5px solid #dc3545; /* Червона смужка зліва */
+      padding-left: 20px;
     }
+    #sidebar .nav-link.active i,
+    #sidebar .nav-link:hover i {
+        color: #dc3545; /* Червоні іконки при наведенні/активності */
+    }
+    #sidebar .nav-link:hover {
+      transform: translateX(5px);
+    }
+    #sidebar .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+      box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+      transition: all 0.2s ease-out;
+    }
+    #sidebar .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
     /* Основний контент праворуч */
     #main-content {
-      margin-left: 220px;
-      padding: 2rem;
+      margin-left: 250px;
+      padding: 1.5rem 2rem;
       flex-grow: 1;
     }
     .section-title {
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      margin-bottom: 2rem;
       font-weight: 700;
-      color: #157347;
-      border-bottom: 2px solid #157347;
-      padding-bottom: 0.3rem;
+      color: #343a40; /* Темний текст */
+      border-bottom: 2px solid #dc3545; /* Червона лінія */
+      padding-bottom: 0.75rem;
+      text-align: left;
     }
-    /* Карти з інформацією */
+    .section-title i {
+        margin-right: 10px;
+        color: #dc3545; /* Червоний колір іконки */
+    }
+
+    /* Картки з інформацією */
     .info-card {
       background: white;
-      border-radius: 0.5rem;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
       margin-bottom: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      border-left: 5px solid; /* Колір буде задано inline */
+    }
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    .info-card h3 {
+      font-size: 1.5rem;
+      color: #495057;
+      margin-bottom: 1rem;
+    }
+    .info-card .display-5 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .info-card small {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    /* Таблиця замовлень */
+    .table-custom {
+      background-color: #fff;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    .table-custom thead {
+      background-color: #f8f9fa; /* Дуже світлий фон для заголовка таблиці */
+      border-bottom: 2px solid #e9ecef;
+    }
+    .table-custom th {
+      padding: 1rem 1.25rem;
+      font-weight: bold;
+      vertical-align: middle;
+      color: #dc3545; /* Червоний колір заголовків стовпців */
+    }
+    .table-custom tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+    .table-custom td {
+      padding: 0.75rem 1.25rem;
+      vertical-align: middle;
+    }
+
+    /* Badge стилі для статусу */
+    .badge {
+      padding: 0.6em 0.9em;
+      border-radius: 0.4rem;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .badge-new { background-color: #0d6efd; color: white; } /* Blue */
+    .badge-processing { background-color: #ffc107; color: #343a40; } /* Yellow */
+    .badge-completed { background-color: #28a745; color: white; } /* Green */
+    .badge-cancelled { background-color: #dc3545; color: white; } /* Red */
+
+    /* Футер */
+    .footer {
+      background-color: #343a40;
+      color: #f8f9fa;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: auto;
+      font-size: 0.9rem;
+    }
+    .footer a {
+      color: #adb5bd;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer a:hover {
+      color: #fff;
     }
   </style>
 </head>
 <body>
 
-<!-- Сайдбар -->
 <nav id="sidebar" class="d-flex flex-column">
-  <a href="/menu" class="nav-link">🍕 Меню</a>
-  <a href="add" class="nav-link">📤 Додати позицію</a>
-  <a href="/" class="nav-link">🔐 Вийти</a>
+  <div class="sidebar-header">
+    <h3>Адмін-панель</h3>
+    <small class="text-secondary">Borichkas slop</small>
+  </div>
+  <ul class="nav flex-column mb-auto">
+    <li class="nav-item">
+      <a href="{{ url_for('admin') }}" class="nav-link active">
+        <i class="fas fa-tachometer-alt"></i> Огляд
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('menu') }}" class="nav-link">
+        <i class="fas fa-utensils"></i> Меню
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('admin_add') }}" class="nav-link">
+        <i class="fas fa-plus-circle"></i> Додати позицію
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-users"></i> Користувачі
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-chart-line"></i> Статистика
+      </a>
+    </li>
+  </ul>
+  <div class="mt-auto px-4 py-3">
+    <a href="{{ url_for('logout') }}" class="btn btn-danger w-100">
+      <i class="fas fa-sign-out-alt"></i> Вийти
+    </a>
+  </div>
 </nav>
 
-<!-- Основний контент -->
 <div id="main-content">
-  <!-- Навігаційна панель зверху -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
-    <div class="container-fluid px-0">
-      <a class="navbar-brand fw-bold text-danger" href="#">🍕 Borichkas slop</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavMenu">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded-3">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">🍕 Borichkas slop</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavMenu" aria-controls="topNavMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="topNavMenu">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#">Повідомлення</a></li>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">
+              <i class="fas fa-bell"></i> Повідомлення
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle fa-lg me-2"></i> Адміністратор
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{{ url_for('dashboard') }}"><i class="fas fa-cogs me-2"></i>Налаштування</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Вийти</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <h2 class="section-title">Дашборд</h2>
+  <h2 class="section-title"><i class="fas fa-info-circle"></i> Загальна інформація</h2>
 
-<div class="info-card text-center">
-  <h3>🍕 Замовлень</h3>
-  <p class="display-5 fw-bold">{{ total_orders }}</p>
-  <small>За цей місяць</small>
-</div>
-<div class="info-card text-center">
-  <h3>💰 Дохід</h3>
-  <p class="display-5 fw-bold">{{ total_income }} ₴</p>
-  <small>За цей місяць</small>
-</div>
+  <div class="row">
+    <div class="col-md-6 col-lg-4">
+      <div class="info-card" style="border-left-color: #28a745;"> <h3>🍕 Замовлень</h3>
+        <p class="display-5 fw-bold" style="color: #28a745;">{{ total_orders }}</p>
+        <small>за цей місяць</small>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="info-card" style="border-left-color: #dc3545;"> <h3>💰 Дохід</h3>
+        <p class="display-5 fw-bold" style="color: #dc3545;">{{ total_income }} ₴</p>
+        <small>за цей місяць</small>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="info-card" style="border-left-color: #0d6efd;"> <h3>👥 Нові користувачі</h3>
+        <p class="display-5 fw-bold" style="color: #0d6efd;">{{ new_users_count if new_users_count is defined else 'N/A' }}</p>
+        <small>за цей місяць</small>
+      </div>
+    </div>
+  </div>
 
-
-  <div class="section-title mt-5">Останні замовлення</div>
+  <h2 class="section-title mt-5"><i class="fas fa-history"></i> Останні замовлення</h2>
 
   <div class="table-responsive">
-    <table class="table table-striped table-hover">
-      <thead class="table-success">
+    <table class="table table-striped table-hover table-custom">
+      <thead>
         <tr>
           <th>№</th>
           <th>Клієнт</th>
-          <th>Піца</th>
+          <th>Адреса</th>
+          <th>Телефон</th>
+          <th>Замовлення</th>
           <th>Сума</th>
           <th>Статус</th>
           <th>Дата</th>
+          <th>Дії</th>
         </tr>
       </thead>
-      <tbody>
+<tbody>
   {% if orders %}
     {% for order in orders %}
     <tr>
       <td>{{ order.id }}</td>
       <td>{{ order.client }}</td>
+      <td>{{ order.address }}</td>
+      <td>{{ order.phone_number }}</td>
       <td>{{ order.pizza }}</td>
       <td>{{ order.total }} ₴</td>
-      <td><span class="badge {{ order.status_class }}">{{ order.status_text }}</span></td>
+      <td><span class="badge
+        {% if order.status == 'new' %}badge-new
+        {% elif order.status == 'processing' %}badge-processing
+        {% elif order.mstatus == 'completed' %}badge-completed
+        {% elif order.status == 'cancelled' %}badge-cancelled
+        {% else %}bg-secondary{% endif %}">
+        {% if order.status == 'new' %}Нове
+        {% elif order.status == 'processing' %}В обробці
+        {% elif order.status == 'completed' %}Виконано
+        {% elif order.status == 'cancelled' %}Скасовано
+        {% else %}Невідомо{% endif %}
+      </span></td>
       <td>{{ order.date }}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" title="Деталі">
+            <i class="fas fa-eye"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-success" title="Змінити статус">
+            <i class="fas fa-edit"></i>
+        </button>
+      </td>
     </tr>
     {% endfor %}
   {% else %}
-    <tr><td colspan="6" class="text-center">Замовлень поки що немає</td></tr>
+    <tr><td colspan="9" class="text-center py-4">Замовлень поки що немає 😔</td></tr>
   {% endif %}
 </tbody>
     </table>
@@ -140,6 +351,23 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="footer mt-auto">
+  <div class="container">
+    &copy; {{ current_year }} Borichkas slop. Усі права захищені. | <a href="#">Політика конфіденційності</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('#sidebar .nav-link');
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
 </body>
 </html>

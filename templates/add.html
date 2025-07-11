@@ -2,88 +2,240 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin — Borichkas slop</title>
+  <title>Додати позицію — Borichkas slop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     body {
-      background-color: #f8f9fa;
-      color: #212529;
+      background-color: #f8f9fa; /* Дуже світлий сірий фон, як на публічних сторінках */
+      color: #212529; /* Темний колір тексту */
       font-family: 'Segoe UI', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
+    /* Верхня навігаційна панель - Залишаємо її максимально схожою на клієнтську */
     .navbar-light .nav-link:hover {
-      color: #d63384;
+      color: #dc3545; /* Червоний колір при наведенні для навбару, як бренд */
     }
+    .navbar-brand {
+      font-weight: bold;
+      color: #dc3545 !important; /* Фірмовий червоний для бренду */
+    }
+    .nav-link.dropdown-toggle::after {
+        display: none; /* Приховуємо стрілку дропдауну для іконки користувача */
+    }
+
+    /* Сайдбар - "Адмінський стиль": світліший, але з чіткими акцентами */
     #sidebar {
-      width: 220px;
-      background: #157347;
+      width: 250px;
+      background: #ffffff; /* Білий фон сайдбару для чистоти */
       min-height: 100vh;
       padding-top: 1rem;
       position: fixed;
       top: 0; left: 0;
-      color: white;
+      color: #343a40; /* Темний текст */
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); /* Легка тінь */
+      transition: all 0.3s ease;
+    }
+    #sidebar .sidebar-header {
+      padding: 1.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #e9ecef; /* Легка розділювальна лінія */
+    }
+    #sidebar .sidebar-header h3 {
+      color: #dc3545; /* Фірмовий червоний для заголовка сайдбару */
+      font-weight: 700;
+      margin-bottom: 0;
     }
     #sidebar .nav-link {
-      color: #b8d8b8;
-      font-weight: 600;
-      padding: 12px 20px;
-      display: block;
+      color: #495057; /* Темніший сірий для посилань */
+      font-weight: 500;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      border-radius: 0; /* Прибираємо округлення, щоб смужка була чіткою */
+    }
+    #sidebar .nav-link i {
+      color: #6c757d; /* Сірі іконки за замовчуванням */
+      font-size: 1.1rem;
     }
     #sidebar .nav-link.active,
     #sidebar .nav-link:hover {
-      background-color: #0e5029;
-      color: #fff;
+      background-color: #f1f1f1; /* Дуже світлий сірий фон при наведенні/активності */
+      color: #dc3545; /* Фірмовий червоний текст */
       text-decoration: none;
-      border-radius: 5px;
+      border-left: 5px solid #dc3545; /* Чітка червона смужка зліва */
+      padding-left: 20px; /* Відступ для смужки */
     }
+    #sidebar .nav-link.active i,
+    #sidebar .nav-link:hover i {
+        color: #dc3545; /* Фірмові червоні іконки */
+    }
+    #sidebar .nav-link:hover {
+      transform: translateX(5px); /* Ефект легкого зсуву */
+    }
+    #sidebar .btn-danger { /* Кнопка "Вийти" у сайдбарі */
+      background-color: #dc3545;
+      border-color: #dc3545;
+      box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+      transition: all 0.2s ease-out;
+    }
+    #sidebar .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Основний контент */
     #main-content {
-      margin-left: 220px;
-      padding: 2rem;
+      margin-left: 250px;
+      padding: 1.5rem 2rem;
       flex-grow: 1;
     }
     .section-title {
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      margin-bottom: 2rem;
       font-weight: 700;
-      color: #157347;
-      border-bottom: 2px solid #157347;
-      padding-bottom: 0.3rem;
+      color: #343a40; /* Темний колір заголовків */
+      border-bottom: 2px solid #dc3545; /* Фірмова червона лінія */
+      padding-bottom: 0.75rem;
+      text-align: left;
     }
+    .section-title i {
+        margin-right: 10px;
+        color: #dc3545; /* Фірмова червона іконка */
+    }
+
+    /* Картки (для форм) - чистий дизайн */
     .info-card {
       background: white;
-      border-radius: 0.5rem;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      border-radius: 0.75rem; /* Округліші кути */
+      padding: 2rem; /* Більший внутрішній відступ */
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Виразніша тінь */
       margin-bottom: 1.5rem;
+    }
+
+    /* Стилі для кнопок форми */
+    .btn-success {
+      background-color: #28a745; /* Фірмовий зелений */
+      border-color: #28a745;
+      transition: all 0.2s ease-out;
+    }
+    .btn-success:hover {
+      background-color: #218838; /* Темніший зелений при наведенні */
+      border-color: #1e7e34;
+      transform: translateY(-2px); /* Легкий ефект при наведенні */
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    }
+    .btn-outline-primary { /* Додаємо для узгодженості, якщо будемо використовувати */
+        color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    /* Футер */
+    .footer {
+      background-color: #343a40;
+      color: #f8f9fa;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: auto;
+      font-size: 0.9rem;
+    }
+    .footer a {
+      color: #adb5bd;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer a:hover {
+      color: #fff;
     }
   </style>
 </head>
 <body>
 
-<!-- Sidebar -->
 <nav id="sidebar" class="d-flex flex-column">
-  <a href="/admin/" class="nav-link">🏠 Головна</a>
-  <a href="/admin/add" class="nav-link active">📤 Додати позицію</a>
-  <a href="/menu" class="nav-link">🍕 Меню</a>
-  <a href="/" class="nav-link">🔐 Вийти</a>
+  <div class="sidebar-header">
+    <h3>Адмін-панель</h3>
+    <small class="text-secondary">Borichkas slop</small>
+  </div>
+  <ul class="nav flex-column mb-auto">
+    <li class="nav-item">
+      <a href="{{ url_for('admin') }}" class="nav-link">
+        <i class="fas fa-tachometer-alt"></i> Огляд
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('menu') }}" class="nav-link">
+        <i class="fas fa-utensils"></i> Меню
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('admin_add') }}" class="nav-link active">
+        <i class="fas fa-plus-circle"></i> Додати позицію
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-users"></i> Користувачі
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="" class="nav-link">
+        <i class="fas fa-chart-line"></i> Статистика
+      </a>
+    </li>
+  </ul>
+  <div class="mt-auto px-4 py-3">
+    <a href="{{ url_for('logout') }}" class="btn btn-danger w-100">
+      <i class="fas fa-sign-out-alt"></i> Вийти
+    </a>
+  </div>
 </nav>
 
-<!-- Main Content -->
 <div id="main-content">
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
-    <div class="container-fluid px-0">
-      <a class="navbar-brand fw-bold text-danger" href="#">🍕 Borichkas slop</a>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded-3">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">🍕 Borichkas slop</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavMenu" aria-controls="topNavMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="topNavMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">
+              <i class="fas fa-bell"></i> Повідомлення
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle fa-lg me-2"></i> Адміністратор
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{{ url_for('dashboard') }}"><i class="fas fa-cogs me-2"></i>Налаштування</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Вийти</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
-  <h2 class="section-title">Додати нову позицію в меню</h2>
+  <h2 class="section-title"><i class="fas fa-plus-circle"></i> Додати нову позицію в меню</h2>
 
   <div class="info-card">
-    <form method="POST" enctype="multipart/form-data" action="/admin/add">
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_add') }}">
       <div class="mb-3">
         <label for="name" class="form-label">Назва</label>
         <input type="text" class="form-control" id="name" name="name" required>
@@ -94,21 +246,42 @@
       </div>
       <div class="mb-3">
         <label for="price" class="form-label">Ціна (₴)</label>
-        <input type="number" class="form-control" id="price" name="price" min="0" required>
-      </div>
+        <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
+        </div>
       <div class="mb-3">
         <label for="image_url" class="form-label">Або встав URL зображення</label>
-        <input type="url" class="form-control" id="image_url" name="image_url">
+        <input type="url" class="form-control" id="image_url" name="image_url" placeholder="https://example.com/image.jpg">
       </div>
       <div class="mb-3">
         <label for="image_file" class="form-label">Або завантаж своє зображення</label>
         <input class="form-control" type="file" id="image_file" name="image_file" accept="image/*">
       </div>
-      <button type="submit" class="btn btn-success">Зберегти позицію</button>
+      <button type="submit" class="btn btn-success">
+        <i class="fas fa-save me-2"></i>Зберегти позицію
+      </button>
     </form>
   </div>
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<footer class="footer mt-auto">
+  <div class="container">
+    &copy; {{ current_year }} Borichkas slop. Усі права захищені. | <a href="#">Політика конфіденційності</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('#sidebar .nav-link');
+        navLinks.forEach(link => {
+            // Перевіряємо, чи посилання відповідає поточному шляху
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
 </body>
 </html>

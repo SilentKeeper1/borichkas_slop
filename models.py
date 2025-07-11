@@ -26,7 +26,7 @@ class Order(Base):
     items = Column(Text, nullable=False)  # JSON товарів
     total = Column(Float, nullable=False)
     address = Column(String, nullable=False)
-    phone_number = Column(String)
+    phone = Column(String)
     status = Column(String, default="new")
 
     user = relationship("User", back_populates="orders")

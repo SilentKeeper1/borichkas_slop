@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify # Додано jsonify
 from models import SessionLocal, User
 import sqlite3
 import json
@@ -74,11 +74,13 @@ def cart():
 @app.route("/add_to_cart", methods=["POST"])
 def add_to_cart():
     if "user_id" not in session:
-        return redirect(url_for("login"))
+        return jsonify({"error": "User not logged in"}), 401
 
-    name = request.form.get("name")
-    price = float(request.form.get("price"))
-    image_url = request.form.get("image_url")
+    # Отримуємо дані з JSON-запиту, а не з форми
+    data = request.get_json()
+    name = data.get("name")
+    price = float(data.get("price"))
+    image_url = data.get("image_url")
 
     cart = session.get("cart", [])
 
@@ -96,7 +98,9 @@ def add_to_cart():
         })
 
     session["cart"] = cart
-    return redirect(url_for("menu"))
+    session.modified = True
+
+    return jsonify({"message": f"Товар '{name}' додано до кошика!"}), 200
 
 
 
@@ -129,7 +133,16 @@ def checkout():
         return redirect(url_for("cart"))
 
     total = sum(item["price"] * item["quantity"] for item in cart)
-    return render_template("checkout.html", cart=cart, total=total)
+
+
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == session["user_id"]).first()
+    db.close()
+
+    user_phone = user.phone if user else ''
+
+    return render_template("checkout.html", cart=cart, total=total, user_phone=user_phone)
+
 
 @app.route("/create_order", methods=["POST"])
 def create_order():
@@ -141,33 +154,42 @@ def create_order():
         return redirect(url_for("cart"))
 
     address = request.form.get("address", "").strip()
+    phone = request.form.get("phone", "").strip()
+
     if not address:
-        return "Адреса доставки є обов'язковою", 400
+        flash("Адреса доставки є обов'язковою!", "error")
+        return redirect(url_for("checkout"))
+
+    if not phone:
+        flash("Номер телефону є обов'язковим!", "error")
+        return redirect(url_for("checkout"))
 
     total_price = sum(item["price"] * item["quantity"] for item in cart)
-    bonus_earned = int(total_price // 10)  # 1 бонус за кожні 10 грн
+    bonus_earned = int(total_price // 10)
 
     db = SessionLocal()
 
-    # Створення замовлення
     new_order = Order(
         user_id=session["user_id"],
         items=json.dumps(cart),
         total=total_price,
         address=address,
+        phone=phone,
         status="new"
     )
     db.add(new_order)
 
-    # Додавання бонусів користувачу
     user = db.query(User).filter(User.id == session["user_id"]).first()
     if user:
         user.bonus_balance = (user.bonus_balance or 0) + bonus_earned
+        if user.phone != phone:
+            user.phone = phone
 
     db.commit()
     db.close()
 
     session["cart"] = []
+    flash("Замовлення успішно оформлено!", "success")
     return redirect(url_for("menu"))
 
 
@@ -190,23 +212,31 @@ def bonus():
     return render_template("bonus.html", bonus=bonuses, total_spent=total_spent)
 
 
-@app.route("/dashboard/")
+@app.route("/dashboard/", methods=['GET', 'POST'])
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    db = SessionLocal()
-    user = db.query(User).filter(User.id == session['user_id']).first()
+    with SessionLocal() as db:
+        user = db.query(User).filter(User.id == session['user_id']).first()
 
-    if request.method == 'POST':
-        user.name = request.form.get('name')
-        user.surname = request.form.get('surname')
-        user.phone = request.form.get('phone')
-        db.commit()
-        flash('Профіль оновлено')
+        if not user:
+            flash("Користувача не знайдено. Будь ласка, увійдіть знову.", "error")
+            return redirect(url_for('logout'))
 
-    db.close()
-    return render_template("dashboard.html", user=user)
+        if request.method == 'POST':
+            user.name = request.form.get('name')
+            user.surname = request.form.get('surname')
+            user.phone = request.form.get('phone')
+
+            try:
+                db.commit()
+                flash('Профіль успішно оновлено!', 'success')
+            except Exception as e:
+                db.rollback()
+                flash(f'Помилка при оновленні профілю: {e}', 'error')
+
+        return render_template("dashboard.html", user=user)
 
 @app.route("/logout")
 def logout():
@@ -248,7 +278,8 @@ def admin():
             "total": order.total,
             "status_text": status_text,
             "status_class": status_class,
-            "date": date_str
+            "date": date_str,
+            "address": order.address
         })
 
     # Статистика

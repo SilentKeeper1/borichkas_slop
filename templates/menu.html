@@ -16,9 +16,23 @@
       text-align: center;
       font-size: 2rem;
     }
+    .card {
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+      border: none;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
     .card img {
       max-height: 200px;
       object-fit: cover;
+      border-top-left-radius: 0.75rem;
+      border-top-right-radius: 0.75rem;
     }
     footer {
       margin-top: 60px;
@@ -34,49 +48,81 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 15px;
     }
     .card-price {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
+      font-weight: bold;
       color: #000;
       margin: 0;
     }
-    /* Прибираємо стрілку з dropdown-toggle */
-.nav-link.dropdown-toggle::after {
-  display: none; /* хаваємо стандартну стрілку */
-}
+    .nav-link.dropdown-toggle::after {
+      display: none;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      transition: all 0.2s ease-out;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-success:active {
+      transform: scale(0.95);
+      background-color: #1e7e34;
+      border-color: #1c7430;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-success:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    }
+
+    /* Стилі для повідомлень тосту */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1080; /* Вище модальних вікон */
+    }
+    .toast-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+    }
   </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
-    <!-- Логотип -->
     <a class="navbar-brand fw-bold text-danger" href="{{ url_for('index') }}">🍕 Borichkas slop</a>
-
-    <!-- Кнопка бургер для мобілок -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <!-- Навігація -->
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
-        <!-- Завжди доступні пункти -->
         <li class="nav-item"><a class="nav-link" href="{{ url_for('menu') }}">Меню</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">Кошик</a></li>
-
         {% if session.get("user_id") %}
-          <!-- Якщо залогінений -->
           <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center"
          href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
          style="
-           background-color: #f0f0f0;        /* світло-сірий фон */
-           border: 2px solid rgba(21, 115, 71, 0.5); /* зелена рамка з прозорістю 50% */
-           border-radius: 50%;               /* кругла форма */
-           padding: 6px 10px;                /* відступ всередині */
-           font-size: 1.2rem;                /* трохи більша піца */
-           width: 42px; height: 42px;       /* квадрат для кола */
+           background-color: #f0f0f0;
+           border: 2px solid rgba(21, 115, 71, 0.5);
+           border-radius: 50%;
+           padding: 6px 10px;
+           font-size: 1.2rem;
+           width: 42px; height: 42px;
          "
          >
         🍕
@@ -86,9 +132,7 @@
         <li><a class="dropdown-item" href="{{ url_for('logout') }}">Вийти</a></li>
       </ul>
     </li>
-
         {% else %}
-          <!-- Якщо НЕ залогінений -->
           <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Вхід</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Реєстрація</a></li>
         {% endif %}
@@ -96,8 +140,6 @@
     </div>
   </div>
 </nav>
-
-
 
 <div class="container">
   <div class="section-title">🍕 Наше меню</div>
@@ -110,7 +152,7 @@
           <h5 class="card-title">{{ item[0] }}</h5>
           <p class="card-text">{{ item[1] }}</p>
           <div class="price-row">
-            <form method="POST" action="{{ url_for('add_to_cart') }}">
+            <form class="add-to-cart-form">
               <input type="hidden" name="name" value="{{ item[0] }}">
               <input type="hidden" name="price" value="{{ item[2] }}">
               <input type="hidden" name="image_url" value="{{ item[3] }}">
@@ -125,14 +167,72 @@
   </div>
 </div>
 
-
-<!-- Footer -->
 <footer>
   <div class="container">
     <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>
   </div>
 </footer>
 
+<div class="toast-container">
+  <div class="toast align-items-center text-white bg-success border-0 toast-success" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+    <div class="d-flex">
+      <div class="toast-body">
+        Товар додано до кошика!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Обираємо всі форми додавання в кошик
+    const forms = document.querySelectorAll('.add-to-cart-form');
+    const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+
+    forms.forEach(form => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Зупиняємо стандартну відправку форми (перезавантаження сторінки)
+
+        const formData = new FormData(form);
+        const name = formData.get('name');
+        const price = formData.get('price');
+        const imageUrl = formData.get('image_url');
+
+        try {
+          const response = await fetch('{{ url_for("add_to_cart") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json' // Важливо: вказуємо, що відправляємо JSON
+            },
+            body: JSON.stringify({ // Відправляємо дані як JSON
+              name: name,
+              price: price,
+              image_url: imageUrl
+            })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log(result.message); // Можна вивести в консоль або показати користувачу
+            // Показати тост про успішне додавання
+            successToast.show();
+
+            // Можна додати логіку для оновлення кількості товарів у кошику в навігації без перезавантаження
+            // Наприклад, якщо сервер повертає оновлену кількість товарів
+          } else {
+            console.error('Помилка при додаванні товару до кошика.');
+            // Обробка помилок, можливо показати інший тост
+          }
+        } catch (error) {
+          console.error('Сталася помилка мережі або інша помилка:', error);
+          // Обробка помилок
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>

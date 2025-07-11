@@ -7,96 +7,288 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
   <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      color: #212529;
+    }
+    .container {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #dc3545; /* Червоний колір для заголовка */
+      margin-bottom: 2.5rem;
+    }
+    .section-title {
+      margin: 40px 0 20px;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    /* Стилі для таблиці замовлення */
+    .table {
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden; /* Щоб закруглені кути були видно */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    .table thead {
+      background-color: #e9ecef; /* Світліший фон для заголовка таблиці */
+    }
+    .table th {
+      padding: 1rem;
+      font-weight: bold;
+      color: #343a40;
+    }
+    .table td {
+      padding: 1rem;
+    }
+    .table img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Стилі для форми */
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+    .form-control {
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ced4da;
+    }
+    .form-control:focus {
+      border-color: #80bdff;
+      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+
+    /* Стилі для повідомлень про зону доставки */
+    #zoneWarning, #zoneSuccess, #modalZoneWarning, #modalZoneSuccess {
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+    #zoneWarning, #modalZoneWarning {
+      color: #dc3545;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+    #zoneSuccess, #modalZoneSuccess {
+      color: #28a745;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+
+    /* Стилі для кнопок */
+    .btn {
+      transition: all 0.2s ease-out;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 0.5rem;
+    }
+
+    /* Стилі та анімація для ЗЕЛЕНИХ кнопок (btn-success) */
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+    .btn-success:active {
+      transform: scale(0.95);
+      background-color: #1e7e34;
+      border-color: #1c7430;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-success:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    }
+
+    /* Стилі та анімація для ЧЕРВОНИХ кнопок (btn-danger) */
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+      box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+    .btn-danger:active {
+      transform: scale(0.95);
+      background-color: #bd2130;
+      border-color: #b21f2d;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-danger:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+
+    /* Стилі та анімація для СІРИХ кнопок (btn-outline-secondary / btn-secondary) */
+    .btn-outline-secondary, .btn-secondary {
+      background-color: transparent;
+      border-color: #6c757d;
+      color: #6c757d;
+      box-shadow: none;
+    }
+    .btn-outline-secondary:hover, .btn-secondary:hover {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      color: #fff;
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+    }
+    .btn-outline-secondary:active, .btn-secondary:active {
+      transform: scale(0.95);
+      background-color: #5a6268;
+      border-color: #545b62;
+      color: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-outline-secondary:focus, .btn-secondary:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
+    }
+
+    /* Стилі для карти в модальному вікні */
     #map {
       height: 400px;
       width: 100%;
       margin-top: 2rem;
       border-radius: 10px;
       overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Тінь для карти */
     }
     .note {
       margin-top: 1rem;
       font-style: italic;
       color: #555;
-    }
-    #zoneWarning {
-      display: none;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
   <div class="container py-4">
-    <h1 class="mb-4">🧾 Оформлення замовлення</h1>
+    <h1>🧾 Оформлення замовлення</h1>
 
     {% if not cart %}
       <div class="alert alert-info">
         Ваш кошик порожній. <a href="{{ url_for('menu') }}">Перейти до меню</a>
       </div>
     {% else %}
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <th>Назва</th>
-            <th>Ціна</th>
-            <th>Кількість</th>
-            <th>Сума</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in cart %}
-          <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.price }} ₴</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.price * item.quantity }} ₴</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-  <div class="d-flex justify-content-between align-items-center mt-4">
-    <h4>Загальна сума: <span class="text-success">{{ total }} ₴</span></h4>
-    <form method="POST" action="{{ url_for('create_order') }}" class="d-flex flex-column flex-sm-row align-items-start gap-2">
-      <div>
-        <label for="addressInput" class="form-label mb-1">Адреса доставки:</label>
-        <input type="text" name="address" id="addressInput" class="form-control" placeholder="Наприклад, Київ, вул. Хрещатик 10" required>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Назва</th>
+              <th>Ціна</th>
+              <th>Кількість</th>
+              <th>Сума</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.price }} ₴</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.price * item.quantity }} ₴</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-      <div class="d-flex flex-column">
-        <a href="{{ url_for('menu') }}" class="btn btn-outline-secondary mb-2">Назад до меню</a>
-        <button type="submit" class="btn btn-success">Підтвердити замовлення</button>
+
+      <div class="d-flex justify-content-between align-items-center mt-4 p-3 border-top border-bottom bg-light rounded">
+        <h4>Загальна сума: <span class="text-success fw-bold">{{ total }} ₴</span></h4>
       </div>
-    </form>
-  </div>
-{% endif %}
 
-    <div id="map"></div>
+      <hr class="my-5">
 
-    <div class="note">
-      ⚠️ Тимчасово не доставляємо на окуповані території України. Ми обов’язково повернемося після деокупації ❤️🇺🇦
+      <form method="POST" action="{{ url_for('create_order') }}" class="mt-4 p-4 bg-white rounded shadow-sm">
+        <h3 class="mb-4 text-center">Ваші дані для доставки</h3>
+        <div class="mb-3">
+          <label for="addressInput" class="form-label">Адреса доставки:</label>
+          <input type="text" name="address" id="addressInput" class="form-control" placeholder="Наприклад, Київ, вул. Хрещатик 10" required>
+        </div>
+        <div class="mb-3">
+          <label for="phoneInput" class="form-label">Номер телефону:</label>
+          <input type="tel" name="phone" id="phoneInput" class="form-control" placeholder="Наприклад, 050 XXX XX XX" required>
+        </div>
+
+        <p class="mt-4 text-center">Перед тим як вписувати адресу доставки, переконайтесь, що ми до вас доставляємо:</p>
+        <div class="text-center">
+            <button type="button" class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#deliveryZoneModal">Перевірити покриття</button>
+        </div>
+
+
+        <div id="zoneWarning" class="text-danger mt-2" style="display:none;">
+          ⚠️ Ваша адреса поза зоною доставки!
+        </div>
+        <div id="zoneSuccess" class="text-success mt-2" style="display:none;">
+          ✅ Адреса в межах зони доставки.
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-3 mt-4">
+          <a href="{{ url_for('menu') }}" class="btn btn-outline-secondary w-100 w-sm-auto">Назад до меню</a>
+          <button type="submit" class="btn btn-success w-100 w-sm-auto">Підтвердити замовлення</button>
+        </div>
+      </form>
+    {% endif %}
+
+    <div class="modal fade" id="deliveryZoneModal" tabindex="-1" aria-labelledby="deliveryZoneModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deliveryZoneModalLabel">Перевірка зони доставки</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="modalAddressInput" class="form-label">Введіть адресу для перевірки:</label>
+              <input type="text" id="modalAddressInput" class="form-control" placeholder="Наприклад, Київ, вул. Хрещатик 10">
+              <button class="btn btn-danger mt-2" onclick="checkDeliveryZone()">Перевірити адресу</button>
+            </div>
+            <div id="modalZoneWarning" class="text-danger mt-2" style="display:none;">
+              ⚠️ Ваша адреса поза зоною доставки!
+            </div>
+            <div id="modalZoneSuccess" class="text-success mt-2" style="display:none;">
+              ✅ Адреса в межах зони доставки.
+            </div>
+            <div id="map" class="mt-3"></div>
+            <div class="note">
+              ⚠️ Тимчасово не доставляємо на окуповані території України. Ми обов’язково повернемося після деокупації ❤️🇺🇦
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-<!-- Адреса доставки -->
-<div class="mt-5">
-  <label for="addressInput" class="form-label">Введіть адресу доставки:</label>
-  <input type="text" id="addressInput" class="form-control" placeholder="Наприклад, Київ, вул. Хрещатик 10">
-  <button class="btn btn-success   mt-2" onclick="checkDeliveryZone()">Перевірити адресу</button>
-</div>
-
-<div id="zoneWarning" class="text-danger mt-2" style="display:none;">
-  ⚠️ Ваша адреса поза зоною доставки!
-</div>
-<div id="zoneSuccess" class="text-success mt-2" style="display:none;">
-  ✅ Адреса в межах зони доставки.
-</div>
-
-
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
 <script>
-  // Спершу оголошуємо зони доставки
   const regions = {
     'green': [
       ['Вінницька область', 49.2331, 28.4682],
@@ -153,7 +345,6 @@
     ]
   };
 
-  // Створюємо масив deliveryZones для перевірки адрес
   const deliveryZones = [];
   for (const [color, areas] of Object.entries(regions)) {
     areas.forEach(([name, lat, lon]) => {
@@ -161,37 +352,42 @@
     });
   }
 
-  // Ініціалізація карти
-  const map = L.map('map').setView([52, 20], 5);
+  let mapInstance = null;
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 10,
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+  function initMap() {
+    if (mapInstance) {
+      mapInstance.remove();
+    }
+    mapInstance = L.map('map').setView([52, 20], 5);
 
-  // Функція додавання кругів зон доставки на карту
-  function addRegionCircle(lat, lon, radius, color, name) {
-    L.circle([lat, lon], {
-      color,
-      fillColor: color,
-      fillOpacity: 0.2,
-      radius
-    }).addTo(map).bindPopup(name);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 10,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(mapInstance);
+
+    for (const [color, areas] of Object.entries(regions)) {
+      areas.forEach(([name, lat, lon]) => {
+        const radius = color === 'green' ? 50000 : color === 'blue' ? 35000 : color === 'red' ? 25000 : 20000;
+        L.circle([lat, lon], {
+          color,
+          fillColor: color,
+          fillOpacity: 0.2,
+          radius
+        }).addTo(mapInstance).bindPopup(name + (color === 'white' ? ' (Антарктида)' : ''));
+      });
+    }
   }
 
-  // Малюємо круги для кожної зони
-  for (const [color, areas] of Object.entries(regions)) {
-    areas.forEach(([name, lat, lon]) => {
-      const radius = color === 'green' ? 50000 : color === 'blue' ? 35000 : color === 'red' ? 25000 : 20000;
-      addRegionCircle(lat, lon, radius, color, name + (color === 'white' ? ' (Антарктида)' : ''));
-    });
-  }
+  const deliveryZoneModal = document.getElementById('deliveryZoneModal');
+  deliveryZoneModal.addEventListener('shown.bs.modal', function () {
+    initMap();
+    mapInstance.invalidateSize();
+  });
 
-  // Функція перевірки введеної адреси
   async function checkDeliveryZone() {
-    const input = document.getElementById('addressInput').value;
-    const warning = document.getElementById('zoneWarning');
-    const success = document.getElementById('zoneSuccess');
+    const input = document.getElementById('modalAddressInput').value;
+    const warning = document.getElementById('modalZoneWarning');
+    const success = document.getElementById('modalZoneSuccess');
 
     warning.style.display = 'none';
     success.style.display = 'none';
@@ -211,10 +407,16 @@
       const userLat = parseFloat(data[0].lat);
       const userLon = parseFloat(data[0].lon);
 
+      if (mapInstance) {
+        L.marker([userLat, userLon]).addTo(mapInstance)
+          .bindPopup(`Ваша адреса: ${input}`).openPopup();
+        mapInstance.setView([userLat, userLon], 9);
+      }
+
       const inZone = deliveryZones.some(region => {
         const dLat = region.lat - userLat;
         const dLon = region.lon - userLon;
-        const distance = Math.sqrt(dLat * dLat + dLon * dLon) * 111000; // приблизно метри
+        const distance = Math.sqrt(dLat * dLat + dLon * dLon) * 111000;
 
         const radius = region.name.includes('Україна') ? 50000 :
                        region.name.includes('Польща') ? 35000 :
@@ -236,5 +438,5 @@
   }
 </script>
 
-  </body>
+</body>
 </html>

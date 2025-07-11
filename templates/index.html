@@ -17,7 +17,7 @@
       padding: 100px 0;
       text-align: center;
       color: white;
-      overflow: hidden; /* важливо для псевдоелемента */
+      overflow: hidden;
     }
 
     .hero::before {
@@ -27,7 +27,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.45); /* затемнення */
+      background: rgba(0, 0, 0, 0.45);
       z-index: 1;
     }
 
@@ -43,9 +43,27 @@
       text-align: center;
       font-size: 2rem;
     }
+
+    /* Стилі для карток: анімація підняття та тінь */
+    .card {
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+      border: none;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      height: 100%; /* Забезпечуємо однакову висоту карток у рядку */
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+
     .card img {
       max-height: 200px;
       object-fit: cover;
+      border-top-left-radius: 0.75rem;
+      border-top-right-radius: 0.75rem;
     }
     footer {
       margin-top: 60px;
@@ -57,46 +75,92 @@
     .navbar-light .nav-link:hover {
       color: #d63384;
     }
-    /* Прибираємо стрілку з dropdown-toggle */
-.nav-link.dropdown-toggle::after {
-  display: none; /* хаваємо стандартну стрілку */
-}
+    .nav-link.dropdown-toggle::after {
+      display: none;
+    }
+
+    /* Стилі та анімація для ЗЕЛЕНИХ кнопок (btn-success) */
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      transition: all 0.2s ease-out;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+    .btn-success:active {
+      transform: scale(0.95);
+      background-color: #1e7e34;
+      border-color: #1c7430;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-success:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    }
+
+    /* Стилі та анімація для ЖОВТИХ кнопок (btn-warning) */
+    .btn-warning {
+      background-color: #ffc107; /* Жовтий колір Bootstrap */
+      border-color: #ffc107;
+      color: #212529; /* Темний текст на жовтій кнопці */
+      transition: all 0.2s ease-out;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
+    }
+    .btn-warning:hover {
+      background-color: #e0a800; /* Темніший жовтий при наведенні */
+      border-color: #d39e00;
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+    .btn-warning:active {
+      transform: scale(0.95);
+      background-color: #d39e00;
+      border-color: #c69500;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-warning:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+
   </style>
 </head>
 <body>
 
-<!-- Навігація -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
-    <!-- Логотип -->
     <a class="navbar-brand fw-bold text-danger" href="{{ url_for('index') }}">🍕 Borichkas slop</a>
-
-    <!-- Кнопка бургер для мобілок -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <!-- Навігація -->
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
-        <!-- Завжди доступні пункти -->
         <li class="nav-item"><a class="nav-link" href="{{ url_for('menu') }}">Меню</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">Кошик</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('bonus') }}">Бонуси</a></li>
 
-
         {% if session.get("user_id") %}
-          <!-- Якщо залогінений -->
           <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center"
          href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
          style="
-           background-color: #f0f0f0;        /* світло-сірий фон */
-           border: 2px solid rgba(21, 115, 71, 0.5); /* зелена рамка з прозорістю 50% */
-           border-radius: 50%;               /* кругла форма */
-           padding: 6px 10px;                /* відступ всередині */
-           font-size: 1.2rem;                /* трохи більша піца */
-           width: 42px; height: 42px;       /* квадрат для кола */
+           background-color: #f0f0f0;
+           border: 2px solid rgba(21, 115, 71, 0.5);
+           border-radius: 50%;
+           padding: 6px 10px;
+           font-size: 1.2rem;
+           width: 42px; height: 42px;
          "
          >
         🍕
@@ -107,7 +171,6 @@
       </ul>
     </li>
                 {% else %}
-          <!-- Якщо НЕ залогінений -->
           <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Вхід</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Реєстрація</a></li>
         {% endif %}
@@ -116,8 +179,6 @@
   </div>
 </nav>
 
-
-<!-- Hero-секція -->
 <section class="hero">
   <div class="container">
     <h1 class="display-4 fw-bold">Ласкаво просимо до Borichkas slop</h1>
@@ -126,7 +187,6 @@
   </div>
 </section>
 
-<!-- Що ми пропонуємо -->
 <div class="container">
   <div class="section-title">🔥 Що ми пропонуємо</div>
   <div class="row text-center">
@@ -148,7 +208,6 @@
     </div>
   </div>
 
-  <!-- Прев’ю меню -->
   <div class="section-title">🍽️ Найпопулярніше</div>
   <div class="row">
     <div class="col-md-4 mb-4">
@@ -184,7 +243,6 @@
   </div>
 </div>
 
-<!-- Footer -->
 <footer>
   <div class="container">
     <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>
