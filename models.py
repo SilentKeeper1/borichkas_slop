@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey, create_
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 Base = declarative_base()
 
-# 🔶 Користувачі
+#  Користувачі
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -19,7 +19,7 @@ class User(Base):
     cart_items = relationship("CartItem", back_populates="user")
 
 
-# 🔶 Замовлення
+# Замовлення
 class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)
@@ -33,7 +33,7 @@ class Order(Base):
     user = relationship("User", back_populates="orders")
 
 
-# 🔶 Кошик
+#  Кошик
 class CartItem(Base):
     __tablename__ = "cart_items"
     id = Column(Integer, primary_key=True)
@@ -45,7 +45,7 @@ class CartItem(Base):
     user = relationship("User", back_populates="cart_items")
 
 
-# 🔧 Ініціалізація БД
+#  Ініціалізація БД
 engine = create_engine("sqlite:///instance/db.sqlite3.db", echo=True)
 Base.metadata.create_all(engine)
 SessionLocal = sessionmaker(bind=engine)

@@ -5,11 +5,28 @@ import json
 import bcrypt
 from models import SessionLocal, User, Order
 from sqlalchemy import func
-from datetime import datetime
+from functools import wraps
 
 
 app = Flask(__name__)
 app.secret_key = "borichka-secret"
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+
+        db = SessionLocal()
+        user = db.query(User).filter(User.id == session["user_id"]).first()
+        db.close()
+
+        if not user or not user.is_admin:
+            flash("У вас немає доступу до адмін панелі.", "error")
+            return redirect(url_for("index"))
+
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route("/")
 def index():
@@ -245,9 +262,8 @@ def logout():
     return redirect(url_for("login"))
 
 @app.route("/admin/")
+@admin_required
 def admin():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
     db = SessionLocal()
 
     # Останні 10 замовлень
@@ -296,11 +312,10 @@ def admin():
 
 
 @app.route("/admin/add", methods=["GET", "POST"])
+@admin_required
 def admin_add():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
     if request.method == "POST":
+
         name = request.form.get("name")
         description = request.form.get("description")
         price = float(request.form.get("price"))
