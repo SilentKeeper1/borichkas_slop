@@ -57,8 +57,8 @@ We implemented a full user experience including auth, menu browsing, cart system
 ---
 
 ## 👥 Team
-- 🧑‍💻 [Єгор]
-- 👩‍💻 [Роберт]
-- 🧑‍💻 [Ім’я 3]
+- 🧑‍💻 [Yehor]
+- 👩‍💻 [Robert]
+- 🧑‍💻 [Artem]
 
 > Створено з ❤️ під час навчання в **GoITeens Python Web**
