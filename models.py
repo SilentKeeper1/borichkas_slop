@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey, create_engine
+from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey, create_engine, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-
 Base = declarative_base()
 
 # 🔶 Користувачі
@@ -13,6 +12,8 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     bonus_balance = Column(Integer, default=0)
+
+    is_admin = Column(Boolean, default=False)
 
     orders = relationship("Order", back_populates="user")
     cart_items = relationship("CartItem", back_populates="user")

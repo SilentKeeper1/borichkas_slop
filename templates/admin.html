@@ -222,16 +222,6 @@
         <i class="fas fa-plus-circle"></i> Додати позицію
       </a>
     </li>
-    <li class="nav-item">
-      <a href="#" class="nav-link">
-        <i class="fas fa-users"></i> Користувачі
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="#" class="nav-link">
-        <i class="fas fa-chart-line"></i> Статистика
-      </a>
-    </li>
   </ul>
   <div class="mt-auto px-4 py-3">
     <a href="{{ url_for('logout') }}" class="btn btn-danger w-100">
@@ -285,8 +275,11 @@
       </div>
     </div>
     <div class="col-md-6 col-lg-4">
-      <div class="info-card" style="border-left-color: #0d6efd;"> <h3>👥 Нові користувачі</h3>
-        <p class="display-5 fw-bold" style="color: #0d6efd;">{{ new_users_count if new_users_count is defined else 'N/A' }}</p>
+      <div class="info-card" style="border-left-color: #0d6efd;">
+        <h3>👥 Нові користувачі</h3>
+          <p class="display-5 fw-bold" style="color: #0d6efd;">
+            {{ total_users }}
+          </p>
         <small>за цей місяць</small>
       </div>
     </div>
@@ -316,7 +309,7 @@
       <td>{{ order.id }}</td>
       <td>{{ order.client }}</td>
       <td>{{ order.address }}</td>
-      <td>{{ order.phone_number }}</td>
+      <td>{{ order.phone }}</td>
       <td>{{ order.pizza }}</td>
       <td>{{ order.total }} ₴</td>
       <td><span class="badge

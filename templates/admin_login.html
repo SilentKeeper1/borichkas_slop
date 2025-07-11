@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Вхід в адмін-панель — Borichkas slop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 0.75rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      max-width: 400px;
+      width: 100%;
+    }
+    .login-card h1 {
+      color: #dc3545;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <h1>Borichkas Slop Admin 🍕</h1>
+  <form method="POST" action="{{ url_for('admin_login') }}">
+    <div class="mb-3">
+      <label for="email" class="form-label">Електронна пошта</label>
+      <input type="email" class="form-control" id="email" name="email" required placeholder="admin@example.com">
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Пароль</label>
+      <input type="password" class="form-control" id="password" name="password" required placeholder="********">
+    </div>
+    <button type="submit" class="btn btn-danger w-100">Увійти</button>
+  </form>
+  <div class="text-center mt-3">
+    <a href="{{ url_for('index') }}" class="text-decoration-none text-secondary">&larr; Назад на сайт</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

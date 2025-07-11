@@ -238,6 +238,16 @@
             <button type="button" class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#deliveryZoneModal">Перевірити покриття</button>
         </div>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            {% if category in ["success", "error"] %}
+              <div class="alert alert-{{ category }} flash-message">{{ message }}</div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
 
         <div id="zoneWarning" class="text-danger mt-2" style="display:none;">
           ⚠️ Ваша адреса поза зоною доставки!

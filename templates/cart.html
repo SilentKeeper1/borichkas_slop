@@ -234,6 +234,16 @@
   </div>
 </div>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      {% if category in ["success"] %}
+        <div class="alert alert-{{ category }} flash-message">{{ message }}</div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <footer>
   <div class="container">
     <p>© 2025 Borichkas slop. Створено з ❤️. Смакуй майбутнє вже сьогодні.</p>

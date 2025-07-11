@@ -5,6 +5,7 @@ import json
 import bcrypt
 from models import SessionLocal, User, Order
 from sqlalchemy import func
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -190,8 +191,7 @@ def create_order():
 
     session["cart"] = []
     flash("Замовлення успішно оформлено!", "success")
-    return redirect(url_for("menu"))
-
+    return redirect(url_for("cart"))
 
 @app.route("/bonus")
 def bonus():
@@ -238,6 +238,7 @@ def dashboard():
 
         return render_template("dashboard.html", user=user)
 
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -254,7 +255,7 @@ def admin():
 
     orders_data = []
     for order in orders:
-        items = json.loads(order.items)  # парсимо json зі списком товарів
+        items = json.loads(order.items)
         pizza_names = ", ".join([item.get("name", "") for item in items])
 
         created_at = getattr(order, "created_at", None)
@@ -282,7 +283,7 @@ def admin():
             "address": order.address
         })
 
-    # Статистика
+
     total_orders = db.query(func.count(Order.id)).scalar()
     total_income = db.query(func.sum(Order.total)).scalar() or 0
 
@@ -325,8 +326,6 @@ def admin_add():
         return redirect(url_for("admin"))
 
     return render_template("add.html")
-
-
 
 if __name__ == "__main__":
     app.run(port=12434, debug=True)
