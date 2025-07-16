@@ -6,9 +6,10 @@ import sqlite3
 import json
 import bcrypt
 import random
+import os
 
 app = Flask(__name__)
-app.secret_key = "borichka-secret"
+app.secret_key = os.environ.get("SECRET_KEY", "borichka-secret")
 
 def group_cart_items(cart):
     grouped = {}
