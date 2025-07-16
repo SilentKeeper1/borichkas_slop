@@ -1,36 +1,44 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify # Додано jsonify
-from models import SessionLocal, User
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from models import SessionLocal, User, Order
+from sqlalchemy import func
+from datetime import datetime, date
 import sqlite3
 import json
 import bcrypt
-from models import SessionLocal, User, Order
-from sqlalchemy import func
-from functools import wraps
-
+import random
 
 app = Flask(__name__)
 app.secret_key = "borichka-secret"
 
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
-            return redirect(url_for("login"))
-
-        db = SessionLocal()
-        user = db.query(User).filter(User.id == session["user_id"]).first()
-        db.close()
-
-        if not user or not user.is_admin:
-            flash("У вас немає доступу до адмін панелі.", "error")
-            return redirect(url_for("index"))
-
-        return f(*args, **kwargs)
-    return decorated_function
+def group_cart_items(cart):
+    grouped = {}
+    for item in cart:
+        key = (item["name"], item["price"])
+        if key not in grouped:
+            grouped[key] = {
+                "name": item["name"],
+                "price": item["price"],
+                "quantity": 0,
+                "image_url": item.get("image_url", "")
+            }
+        grouped[key]["quantity"] += item.get("quantity", 1)
+    return list(grouped.values())
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    conn = sqlite3.connect("instance/borichkas_slop.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, description, price, image_url FROM products WHERE category = 'pizza'")
+    pizzas = cursor.fetchall()
+    conn.close()
+
+    pizza_of_the_day = None
+    if pizzas:
+        seed = int(date.today().strftime("%Y%m%d"))
+        random.seed(seed)
+        pizza_of_the_day = random.choice(pizzas)  # [name, description, price, image_url]
+
+    return render_template("index.html", pizza_of_the_day=pizza_of_the_day)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -86,8 +94,9 @@ def cart():
         return redirect(url_for("login"))
 
     cart = session.get("cart", [])
-    total = sum(item["price"] * item["quantity"] for item in cart)
-    return render_template("cart.html", cart=cart, total=total)
+    grouped_cart = group_cart_items(cart)
+    total = sum(item["price"] * item["quantity"] for item in grouped_cart)
+    return render_template("cart.html", cart=grouped_cart, total=total)
 
 @app.route("/add_to_cart", methods=["POST"])
 def add_to_cart():
@@ -120,6 +129,38 @@ def add_to_cart():
 
     return jsonify({"message": f"Товар '{name}' додано до кошика!"}), 200
 
+@app.route("/update_cart", methods=["POST"])
+def update_cart():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    cart = []
+    try:
+        items_count = int(request.form.get("items_count", 0))
+    except ValueError:
+        items_count = 0
+
+    for i in range(items_count):
+        name = request.form.get(f"name_{i}")
+        price = float(request.form.get(f"price_{i}", 0))
+        quantity = int(request.form.get(f"quantity_{i}", 1))
+        image_url = request.form.get(f"image_url_{i}", "")
+
+        if quantity < 1:
+            quantity = 1
+
+        cart.append({
+            "name": name,
+            "price": price,
+            "quantity": quantity,
+            "image_url": image_url
+        })
+
+    session["cart"] = cart
+    session.modified = True
+
+    flash("Кількість товарів оновлено", "success")
+    return redirect(url_for("cart"))
 
 
 @app.route("/remove_from_cart", methods=["POST"])
@@ -167,9 +208,16 @@ def create_order():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    cart = session.get("cart", [])
-    if not cart:
-        return redirect(url_for("cart"))
+    cart_data = request.form.get("cart_json")
+    if not cart_data:
+        flash("Кошик порожній або не передано!", "error")
+        return redirect(url_for("checkout"))
+
+    try:
+        cart = json.loads(cart_data)
+    except json.JSONDecodeError:
+        flash("Невірний формат замовлення!", "error")
+        return redirect(url_for("checkout"))
 
     address = request.form.get("address", "").strip()
     phone = request.form.get("phone", "").strip()
@@ -206,7 +254,7 @@ def create_order():
     db.commit()
     db.close()
 
-    session["cart"] = []
+    session["cart"] = []  # очищаємо кошик
     flash("Замовлення успішно оформлено!", "success")
     return redirect(url_for("cart"))
 
@@ -262,8 +310,9 @@ def logout():
     return redirect(url_for("login"))
 
 @app.route("/admin/")
-@admin_required
 def admin():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
     db = SessionLocal()
 
     # Останні 10 замовлень
@@ -288,6 +337,9 @@ def admin():
         }
         status_text, status_class = status_map.get(order.status, (order.status.capitalize(), "bg-secondary"))
 
+        items = json.loads(order.items)
+        # ...
+
         orders_data.append({
             "id": order.id,
             "client": client_name,
@@ -296,26 +348,31 @@ def admin():
             "status_text": status_text,
             "status_class": status_class,
             "date": date_str,
-            "address": order.address
+            "address": order.address,
+            "phone": order.phone,
+            "status": order.status,
+            "items_list": items  # Додано для шаблону
         })
-
 
     total_orders = db.query(func.count(Order.id)).scalar()
     total_income = db.query(func.sum(Order.total)).scalar() or 0
+    total_users = db.query(func.count(User.id)).scalar()
 
     db.close()
 
     return render_template("admin.html",
                            orders=orders_data,
                            total_orders=total_orders,
-                           total_income=total_income)
+                           total_income=total_income,
+                           total_users=total_users)
 
 
 @app.route("/admin/add", methods=["GET", "POST"])
-@admin_required
 def admin_add():
-    if request.method == "POST":
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
+    if request.method == "POST":
         name = request.form.get("name")
         description = request.form.get("description")
         price = float(request.form.get("price"))

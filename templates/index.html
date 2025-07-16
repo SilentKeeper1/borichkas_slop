@@ -134,6 +134,11 @@
         box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
     }
 
+    .card:hover {
+      transform: translateY(-5px);
+      transition: 0.3s ease;
+    }
+
   </style>
 </head>
 <body>
@@ -208,40 +213,25 @@
     </div>
   </div>
 
-  <div class="section-title">🍽️ Найпопулярніше</div>
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm">
-        <img src="https://cdn.smak.menu/images/maxone/14741/14741-354a42d77438f1873a7305a65df61089.jpg" class="card-img-top" alt="Пепероні">
-        <div class="card-body">
-          <h5 class="card-title">Класична Пепероні</h5>
-          <p class="card-text">Соковита й гостра — улюблениця поціновувачів традиційної піци.</p>
-          <a href="#" class="btn btn-success">Детальніше</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm">
-        <img src="https://foodfestival.com.ua/image/cache/catalog/articles/glavnoe_blyudo-pizza-margherita-pomidory-motsarela-bazilik-1920x1000.jpg" class="card-img-top" alt="Маргарита">
-        <div class="card-body">
-          <h5 class="card-title">Піца Маргарита</h5>
-          <p class="card-text">Томати, базилік та моцарела — ідеальний баланс простоти й смаку.</p>
-          <a href="#" class="btn btn-success">Детальніше</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm">
-        <img src="https://galya-baluwana.in.ua/wp-content/uploads/2023/11/Pitsa-Gavajska.webp" class="card-img-top" alt="Гавайська">
-        <div class="card-body">
-          <h5 class="card-title">Гавайська</h5>
-          <p class="card-text">Шинка та ананас — солодко-солоний контраст, що викликає суперечки і любов.</p>
-          <a href="#" class="btn btn-success">Детальніше</a>
-        </div>
+<section class="py-5 text-center bg-white">
+  <div class="container">
+    <h2 class="mb-4 fw-bold">🎁 Піца дня</h2>
+
+    <div class="card shadow mx-auto" style="max-width: 400px; border-radius: 1rem;">
+      <img src="{{ pizza_of_the_day[3] }}" class="card-img-top rounded-top" alt="{{ pizza_of_the_day[0] }}" style="object-fit: cover; height: 250px;">
+      <div class="card-body">
+        <h5 class="card-title fw-semibold">{{ pizza_of_the_day[0] }}</h5>
+        <p class="card-text text-muted">{{ pizza_of_the_day[1] }}</p>
+        <p class="fs-5 text-danger fw-bold">{{ pizza_of_the_day[2] }} ₴</p>
+        <a href="{{ url_for('menu') }}" class="btn btn-warning fw-semibold px-4 mt-2">
+          <i class="fas fa-shopping-cart me-1"></i> Замовити
+        </a>
       </div>
     </div>
   </div>
+</section>
 </div>
+
 
 <footer>
   <div class="container">

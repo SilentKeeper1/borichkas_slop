@@ -5,20 +5,22 @@
   <title>Налаштування профілю — Borichkas slop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-
   <style>
+    /* Основні стилі для тіла сторінки */
     body {
       background-color: #f8f9fa;
       font-family: 'Segoe UI', sans-serif;
       color: #212529;
     }
+    /* Заголовок секції налаштувань */
     .section-title {
       margin: 40px 0 20px;
       text-align: center;
       font-size: 2rem;
-      color: #dc3545; /* Червоний колір для заголовка */
+      color: #dc3545; /* Червоний для акценту */
       margin-bottom: 2.5rem;
     }
+    /* Карточка для форми */
     .card {
       transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
       border: none;
@@ -27,29 +29,36 @@
       background-color: #fff;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
+    /* Відступи всередині карточки */
     .card-body {
       padding: 2rem;
     }
+    /* Мітки для полів форми */
     .form-label {
       font-weight: 600;
       color: #495057;
       margin-bottom: 0.5rem;
     }
+    /* Вхідні поля форми */
     .form-control {
       border-radius: 0.5rem;
       padding: 0.75rem 1rem;
       border: 1px solid #ced4da;
     }
+    /* Обводка і тінь при фокусі на полі */
     .form-control:focus {
       border-color: #80bdff;
       box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
     }
+    /* Ховер для навігаційних посилань */
     .navbar-light .nav-link:hover {
       color: #d63384;
     }
+    /* Приховує стрілочку у dropdown */
     .nav-link.dropdown-toggle::after {
       display: none;
     }
+    /* Футер сторінки */
     footer {
       margin-top: 60px;
       background: #e9ecef;
@@ -58,7 +67,7 @@
       text-align: center;
     }
 
-    /* Стилі для кнопок */
+    /* Базові стилі для кнопок */
     .btn {
       transition: all 0.2s ease-out;
       font-weight: 600;
@@ -66,36 +75,40 @@
       border-radius: 0.5rem;
     }
 
-    /* Стилі та анімація для ЗЕЛЕНИХ кнопок (btn-success) */
+    /* Зелена кнопка (підтвердити, зберегти) */
     .btn-success {
       background-color: #28a745;
       border-color: #28a745;
       box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
     }
+    /* Ефекти наведения на зелену кнопку */
     .btn-success:hover {
       background-color: #218838;
       border-color: #1e7e34;
       transform: scale(1.02);
       box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
     }
+    /* Активний стан зеленої кнопки */
     .btn-success:active {
       transform: scale(0.95);
       background-color: #1e7e34;
       border-color: #1c7430;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
+    /* Фокус на зеленій кнопці */
     .btn-success:focus {
         outline: none;
         box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
     }
 
-    /* Стилі та анімація для СІРИХ кнопок (btn-outline-secondary / btn-secondary) */
+    /* Стилі для сірих кнопок (outline та звичайні) */
     .btn-outline-secondary, .btn-secondary {
       background-color: transparent;
       border-color: #6c757d;
       color: #6c757d;
       box-shadow: none;
     }
+    /* Наведение на сірі кнопки */
     .btn-outline-secondary:hover, .btn-secondary:hover {
       background-color: #6c757d;
       border-color: #6c757d;
@@ -103,6 +116,7 @@
       transform: scale(1.02);
       box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
     }
+    /* Активний стан сірих кнопок */
     .btn-outline-secondary:active, .btn-secondary:active {
       transform: scale(0.95);
       background-color: #5a6268;
@@ -110,12 +124,13 @@
       color: #fff;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
+    /* Фокус на сірих кнопках */
     .btn-outline-secondary:focus, .btn-secondary:focus {
         outline: none;
         box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
     }
 
-    /* Стилі для повідомлень флеш */
+    /* Повідомлення після дії (флеш) */
     .flash-message {
         margin-top: 1.5rem;
         padding: 1rem 1.25rem;
@@ -123,17 +138,18 @@
         text-align: center;
         font-weight: 500;
     }
+    /* Зелений фон для успішних повідомлень */
     .flash-message.success {
         background-color: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
+    /* Червоний фон для помилок */
     .flash-message.error {
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
-
   </style>
 </head>
 <body>

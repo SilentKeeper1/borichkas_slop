@@ -187,6 +187,7 @@
 <div class="container">
   <div class="section-title">🛒 Ваш кошик</div>
 
+ <form method="POST" action="{{ url_for('update_cart') }}">
   <div class="table-responsive">
     <table class="table align-middle">
       <thead>
@@ -205,10 +206,15 @@
         {% else %}
           {% for item in cart %}
           <tr>
-            <td><img src="{{ item.image_url }}" alt="{{ item.name }}"></td>
+            <td><img src="{{ item.image_url }}" alt="{{ item.name }}" style="max-width: 60px;"></td>
             <td>{{ item.name }}</td>
             <td>{{ item.price }} ₴</td>
-            <td>{{ item.quantity }}</td>
+            <td>
+              <input type="number" name="quantity_{{ loop.index0 }}" value="{{ item.quantity }}" min="1" class="form-control" style="width:80px;" required>
+              <input type="hidden" name="name_{{ loop.index0 }}" value="{{ item.name }}">
+              <input type="hidden" name="price_{{ loop.index0 }}" value="{{ item.price }}">
+              <input type="hidden" name="image_url_{{ loop.index0 }}" value="{{ item.image_url }}">
+            </td>
             <td>{{ (item.price * item.quantity) | round(2) }} ₴</td>
             <td>
               <form method="POST" action="{{ url_for('remove_from_cart') }}">
@@ -223,16 +229,19 @@
     </table>
   </div>
 
+  {% if cart %}
+  <input type="hidden" name="items_count" value="{{ cart|length }}">
   <div class="d-flex justify-content-between align-items-center mt-4">
     <h4>Загальна сума: <span class="text-success">{{ total | round(2) }} ₴</span></h4>
     <div>
+      <button type="submit" class="btn btn-primary me-2">Оновити кількість</button>
       <a href="{{ url_for('clear_cart') }}" class="btn btn-outline-secondary me-2">Очистити кошик</a>
-      {% if cart %}
-        <a href="{{ url_for('checkout') }}" class="btn btn-success">Оформити замовлення</a>
-      {% endif %}
+      <a href="{{ url_for('checkout') }}" class="btn btn-success">Оформити замовлення</a>
     </div>
   </div>
-</div>
+  {% endif %}
+</form>
+
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -286,6 +295,62 @@ document.querySelector(".btn-success").addEventListener("click", async () => {
     alert(result.message); // Це повідомлення залишаємо, воно не є помилкою
     document.querySelector("tbody").innerHTML = "";
   }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const updateTotals = () => {
+    let total = 0;
+    document.querySelectorAll("tbody tr").forEach(row => {
+      const price = parseFloat(row.querySelector("td:nth-child(3)").textContent.replace("₴", ""));
+      const quantityInput = row.querySelector(".quantity-input");
+      const quantity = parseInt(quantityInput.value);
+      const subtotalCell = row.querySelector("td:nth-child(5)");
+      const subtotal = price * quantity;
+      subtotalCell.textContent = `${subtotal.toFixed(2)} ₴`;
+      total += subtotal;
+    });
+    document.querySelector("h4 span").textContent = `${total.toFixed(2)} ₴`;
+  };
+
+  document.querySelectorAll(".increment").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const input = btn.parentElement.querySelector(".quantity-input");
+      input.value = parseInt(input.value) + 1;
+      updateTotals();
+    });
+  });
+
+  document.querySelectorAll(".decrement").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const input = btn.parentElement.querySelector(".quantity-input");
+      const current = parseInt(input.value);
+      if (current > 1) {
+        input.value = current - 1;
+        updateTotals();
+      }
+    });
+  });
+
+  document.querySelectorAll(".quantity-input").forEach(input => {
+    input.addEventListener("change", updateTotals);
+  });
+
+  // При натисканні "Оформити замовлення"
+  document.querySelector(".btn-success").addEventListener("click", () => {
+    const cartItems = [];
+    document.querySelectorAll("tbody tr").forEach(row => {
+      const name = row.querySelector("td:nth-child(2)").textContent.trim();
+      const price = parseFloat(row.querySelector("td:nth-child(3)").textContent.replace("₴", ""));
+      const quantity = parseInt(row.querySelector(".quantity-input").value);
+      cartItems.push({ name, price, quantity });
+    });
+
+    // Зберігаємо в sessionStorage і переходимо на checkout
+    sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+    window.location.href = "/checkout";
+  });
+
+  updateTotals();
 });
 </script>
 </body>

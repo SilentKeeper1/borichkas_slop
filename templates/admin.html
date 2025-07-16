@@ -7,6 +7,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+      .badge-new        { background-color: #0d6efd; color: white; }
+      .badge-processing { background-color: #ffc107; color: #343a40; }
+      .badge-completed  { background-color: #28a745; color: white; }
+      .badge-cancelled  { background-color: #dc3545; color: white; }
     body {
       background-color: #f8f9fa; /* Дуже світлий сірий фон */
       color: #212529; /* Темний колір тексту */
@@ -274,12 +278,12 @@
         <small>за цей місяць</small>
       </div>
     </div>
-    <div class="col-md-6 col-lg-4">
+<div class="col-md-6 col-lg-4">
       <div class="info-card" style="border-left-color: #0d6efd;">
         <h3>👥 Нові користувачі</h3>
-          <p class="display-5 fw-bold" style="color: #0d6efd;">
-            {{ total_users }}
-          </p>
+        <p class="display-5 fw-bold" style="color: #0d6efd;">
+          {{ total_users }}
+        </p>
         <small>за цей місяць</small>
       </div>
     </div>
@@ -298,10 +302,11 @@
           <th>Замовлення</th>
           <th>Сума</th>
           <th>Статус</th>
-          <th>Дата</th>
           <th>Дії</th>
         </tr>
       </thead>
+<!-- ДОКУМЕНТ ТАКИЙ САМИЙ ДО <tbody> -->
+
 <tbody>
   {% if orders %}
     {% for order in orders %}
@@ -312,44 +317,71 @@
       <td>{{ order.phone }}</td>
       <td>{{ order.pizza }}</td>
       <td>{{ order.total }} ₴</td>
-      <td><span class="badge
-        {% if order.status == 'new' %}badge-new
-        {% elif order.status == 'processing' %}badge-processing
-        {% elif order.mstatus == 'completed' %}badge-completed
-        {% elif order.status == 'cancelled' %}badge-cancelled
-        {% else %}bg-secondary{% endif %}">
-        {% if order.status == 'new' %}Нове
-        {% elif order.status == 'processing' %}В обробці
-        {% elif order.status == 'completed' %}Виконано
-        {% elif order.status == 'cancelled' %}Скасовано
-        {% else %}Невідомо{% endif %}
-      </span></td>
-      <td>{{ order.date }}</td>
+        <td>
+          {% if order.status_text == 'Нове' %}
+            <span class="badge badge-new">Нове</span>
+          {% elif order.status_text == 'Обробляється' %}
+            <span class="badge badge-processing">Обробляється</span>
+          {% elif order.status_text == 'Завершено' %}
+            <span class="badge badge-completed">Завершено</span>
+          {% elif order.status_text == 'Скасовано' %}
+            <span class="badge badge-cancelled">Скасовано</span>
+          {% else %}
+            <span class="badge bg-secondary">{{ order.status_text }}</span>
+          {% endif %}
+        </td>
       <td>
-        <button class="btn btn-sm btn-outline-primary" title="Деталі">
-            <i class="fas fa-eye"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-success" title="Змінити статус">
-            <i class="fas fa-edit"></i>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#orderModal{{ order.id }}">
+          <i class="fas fa-eye"></i>
         </button>
       </td>
     </tr>
+
+    <!--  МОДАЛЬНЕ ВІКНО ВСЕРЕДИНІ ЦИКЛУ -->
+    <div class="modal fade" id="orderModal{{ order.id }}" tabindex="-1" aria-labelledby="orderModalLabel{{ order.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderModalLabel{{ order.id }}">Деталі замовлення №{{ order.id }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Клієнт:</strong> {{ order.client }}</p>
+            <p><strong>Адреса:</strong> {{ order.address }}</p>
+            <p><strong>Телефон:</strong> {{ order.phone }}</p>
+            <p><strong>Сума:</strong> {{ order.total }} ₴</p>
+            <hr>
+            <h6>🧾 Товари:</h6>
+            <ul class="list-group">
+              {% for item in order.items_list %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{{ item.name }}</strong> — {{ item.price }} ₴ × {{ item.quantity }}
+                </div>
+                <span>{{ (item.price * item.quantity) | round(2) }} ₴</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endfor %}
   {% else %}
     <tr><td colspan="9" class="text-center py-4">Замовлень поки що немає 😔</td></tr>
   {% endif %}
 </tbody>
     </table>
-  </div>
-
-</div>
 
 <footer class="footer mt-auto">
   <div class="container">
     &copy; {{ current_year }} Borichkas slop. Усі права захищені. | <a href="#">Політика конфіденційності</a>
   </div>
 </footer>
-
+</body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -361,6 +393,44 @@
             }
         });
     });
+
+   document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById('orderModal');
+    const clientSpan = document.getElementById('modal-client');
+    const phoneSpan = document.getElementById('modal-phone');
+    const addressSpan = document.getElementById('modal-address');
+    const dateSpan = document.getElementById('modal-date');
+    const totalSpan = document.getElementById('modal-total');
+    const itemsList = document.getElementById('modal-items');
+
+    document.querySelectorAll(".view-order-btn").forEach(button => {
+      button.addEventListener("click", function () {
+        const order = JSON.parse(this.getAttribute("data-order"));
+
+        clientSpan.textContent = order.client;
+        phoneSpan.textContent = order.phone || '—';
+        addressSpan.textContent = order.address;
+        dateSpan.textContent = order.date;
+        totalSpan.textContent = order.total;
+
+        // Очистити попередні товари
+        itemsList.innerHTML = "";
+
+        try {
+          const items = JSON.parse(order.raw_items);
+          items.forEach(item => {
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `
+              ${item.name} <span class="badge bg-secondary rounded-pill">${item.quantity} × ${item.price} ₴</span>
+            `;
+            itemsList.appendChild(li);
+          });
+        } catch (err) {
+          itemsList.innerHTML = '<li class="list-group-item">Помилка при завантаженні товарів</li>';
+        }
+      });
+    });
+  });
 </script>
-</body>
 </html>

@@ -19,7 +19,7 @@ class User(Base):
     cart_items = relationship("CartItem", back_populates="user")
 
 
-# Замовлення
+#  Замовлення
 class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)

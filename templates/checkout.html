@@ -219,9 +219,9 @@
       <div class="d-flex justify-content-between align-items-center mt-4 p-3 border-top border-bottom bg-light rounded">
         <h4>Загальна сума: <span class="text-success fw-bold">{{ total }} ₴</span></h4>
       </div>
-
+      <form method="POST" action="{{ url_for('create_order') }}">
+        <input type="hidden" name="cart_json" id="cart_json_input">
       <hr class="my-5">
-
       <form method="POST" action="{{ url_for('create_order') }}" class="mt-4 p-4 bg-white rounded shadow-sm">
         <h3 class="mb-4 text-center">Ваші дані для доставки</h3>
         <div class="mb-3">
@@ -247,6 +247,34 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
+
+        <h4 class="text-center mb-3">Спосіб оплати</h4>
+        <div class="mb-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="payment_method" id="payCard" value="card" checked>
+            <label class="form-check-label" for="payCard">
+              💳 Онлайн карткою
+            </label>
+          </div>
+          <div class="form-check mt-2">
+            <input class="form-check-input" type="radio" name="payment_method" id="payCash" value="cash">
+            <label class="form-check-label" for="payCash">
+              💵 Готівкою при доставці
+            </label>
+          </div>
+        </div>
+
+
+        <div id="cardFields">
+          <div class="mb-3">
+            <label for="cardNumber" class="form-label">Номер картки:</label>
+            <input type="text" class="form-control" id="cardNumber" name="card_number" placeholder="Наприклад: 1234 5678 9012 3456" maxlength="19">
+          </div>
+          <div class="mb-3">
+            <label for="cvv" class="form-label">CVV (код на звороті картки):</label>
+            <input type="text" class="form-control" id="cvv" name="cvv" placeholder="Наприклад: 123" maxlength="3">
+          </div>
+        </div>
 
 
         <div id="zoneWarning" class="text-danger mt-2" style="display:none;">
@@ -446,7 +474,27 @@
       warning.style.display = 'block';
     }
   }
-</script>
+  const payCard = document.getElementById('payCard');
+  const payCash = document.getElementById('payCash');
+  const cardFields = document.getElementById('cardFields');
 
+  function toggleCardFields() {
+    if (payCard.checked) {
+      cardFields.style.display = 'block';
+      cardFields.querySelectorAll('input').forEach(input => input.required = true);
+    } else {
+      cardFields.style.display = 'none';
+      cardFields.querySelectorAll('input').forEach(input => input.required = false);
+    }
+  }
+
+  payCard.addEventListener('change', toggleCardFields);
+  payCash.addEventListener('change', toggleCardFields);
+  window.addEventListener('DOMContentLoaded', toggleCardFields);
+
+  const cart = {{ cart|tojson }};
+  const cartJsonInput = document.getElementById("cart_json_input");
+  cartJsonInput.value = JSON.stringify(cart);
+</script>
 </body>
 </html>
